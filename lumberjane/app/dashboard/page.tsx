@@ -27,7 +27,7 @@ const Dashboard: NextPage = () => {
             const { data, error } = await supabase
                 .from('keys')
                 .select('*')
-                .eq('user_id', user.id);
+                .eq('userId', user.id);
 
             setLoading(false);
 
@@ -65,7 +65,7 @@ const Dashboard: NextPage = () => {
         const { data, error } = await supabase
             .from('keys')
             .insert({
-                user_id: user.id,
+                userId: user.id,
                 name: newKey.name,
                 key: encryptedKey,
                 description: newKey.description,

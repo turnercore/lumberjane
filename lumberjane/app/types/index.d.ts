@@ -10,8 +10,10 @@ export type Key = {
     key: string; // This field will store the encrypted key in the format `iv:encryptedkey`
     value?: string; // This field will be used for the decrypted value for display purposes, but won't be stored in the database
     description: string;
-    user_id: number;
+    userId: number;
+    createdAt?: Date;
+    isSecret?: boolean;
 };
 
-type NewKeyData = Omit<Key, 'id' | 'user_id' | 'key'>;
+type NewKeyData = Omit<Key, 'id' | 'userId' | 'key' | 'createdAt'>;
 
