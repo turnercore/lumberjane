@@ -15,7 +15,7 @@ export default function LoginMagicLinkForm() {
         const credentials =  {
             email,
             options: {
-              emailRedirectTo: 'http://localhost:3000/auth/callback'
+              emailRedirectTo: 'http://localhost:3000/api/v1/auth/callback'
             }
           }
 
@@ -52,7 +52,7 @@ export default function LoginMagicLinkForm() {
         theme="dark"
         showLinks={false}
         providers={[]}
-        redirectTo="http://localhost:3000/auth/callback"
+        redirectTo="http://localhost:3000/api/v1/auth/callback"
         onSignIn={handleSignIn}
         loading={loading}
         />

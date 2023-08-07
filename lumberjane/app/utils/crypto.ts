@@ -1,10 +1,8 @@
-// @/utils/crypto.ts
-// import fetch from 'isomorphic-unfetch';
 import crypto from 'crypto';
 
 async function getDerivedKey(userId: string, passphrase: string = ''): Promise<string> {
   try {
-    const response = await fetch('/api/v1/kdf', {
+    const response = await fetch('/api/v1/crypto/kdf', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
