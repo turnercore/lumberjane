@@ -34,13 +34,14 @@ const Dashboard: NextPage = () => {
                 toast.error('Error fetching keys!');
                 return;
             }
-            
-            const decryptedKeys = await Promise.all(data.map(async (key) => {
-                const decryptedValue = await decrypt(key.key);
-                return { ...key, value: decryptedValue };
-            }));
-            
-            setKeys(decryptedKeys);
+
+            if (!data || !Array.isArray(data)) {
+                toast.error('Unexpected error: Data array missing.');
+                return;
+            }
+
+            //Set keys to keys array
+            setKeys(data);
         };
         
         fetchKeys();
@@ -77,9 +78,13 @@ const Dashboard: NextPage = () => {
             toast.error('Unexpected error: Data array missing.');
             return;
         }
-        const decryptedValue = await decrypt(encryptedKey);
-        const newKeys = [...keys, { ...(data[0] as Key), value: decryptedValue }];
-        setKeys(newKeys);
+
+        if (!data[0]) {
+            toast.error('Unexpected error: Data array empty.');
+            return;
+        }
+
+        setKeys([...keys, data[0]]);
     };
     
     const handleDeleteKeyConfirmation = (id: number) => {

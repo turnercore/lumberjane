@@ -1,21 +1,23 @@
-// /pages/api/v1/kdf.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto';
 
 // This is your server's secret key. It should be kept private and not exposed.
 const LUMBERJANE_MASTER_KEY = process.env.LUMBERJANE_MASTER_KEY || 'defaultSecret'; // You should set this in your environment variables.
 const iterations = process.env.ITERATIONS ? parseInt(process.env.ITERATIONS) : 100000; // You can adjust this based on security requirements.
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
   try {
-    if (req.method !== 'POST') {
-      return res.status(405).end();
+    if (!req.body) { 
+        return NextResponse.json({ error: 'No body provided.' }, { status: 400 });
     }
 
-    const { user_id, passphrase = '' } = req.body;
+    const requestBody = await req.text();
+    const parsedBody = JSON.parse(requestBody);
+
+    const { user_id, passphrase = '' } = parsedBody;
 
     if (!user_id) {
-      return res.status(400).json({ error: 'User ID is required.' });
+      return NextResponse.json({ error: 'User ID is required.' }, { status: 400 });
     }
 
     // Use a cryptographic key derivation function (KDF) to derive the encryption key.
@@ -29,10 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ).toString('hex'); // Convert to hex format for easier handling
 
     // Return the derived key to the client.
-    return res.status(200).json({ derivedKey });
+    return NextResponse.json({ derivedKey });
 
   } catch (error) {
     console.error('Error generating derived key:', error);
-    return res.status(500).json({ error: 'Internal server error.' });
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }
