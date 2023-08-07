@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography } from '@mui/material';
 import type { NewKeyData } from '@/types';
+import { encrypt } from '@/utils/crypto';
+import { useAuthContext } from '@/context';
+import { toast } from 'react-toastify';
+
 
 type KeyFormProps = {
   onAdd: (key: NewKeyData) => void;
@@ -10,14 +14,29 @@ const KeyForm: React.FC<KeyFormProps> = ({ onAdd }) => {
   const [newKeyName, setNewKeyName] = useState('');
   const [newKeyValue, setNewKeyValue] = useState('');
   const [newKeyDescription, setNewKeyDescription] = useState('');
+  const { user } = useAuthContext();
+  const userId = user?.id || '';
 
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
+
+    if (!user || userId === '') {
+      //Throw an error, unable to get user id
+      console.log("unable to get userid when submitting form")
+      toast.error('Unable to get user id when submitting form');
+      return;
+    }
+
     if (newKeyName && newKeyValue) {
+      // Encrypt the key value before sending it to the server
+      const encryptedValue = await encrypt(newKeyValue, userId, '');
+      
       onAdd({
         name: newKeyName,
-        value: newKeyValue,
+        value: encryptedValue,
         description: newKeyDescription,
       });
+      
       setNewKeyName('');
       setNewKeyValue('');
       setNewKeyDescription('');
