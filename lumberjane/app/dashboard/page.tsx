@@ -1,135 +1,55 @@
-"use client";
-import { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { useAuthContext } from '@/context';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
-import { Container, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import KeyForm from './components/KeyForm';
+import { Container, Typography, CircularProgress } from '@mui/material';
+// import KeyForm from './components/KeyForm';
 import KeyList from './components/KeyList';
 import { Key, NewKeyData } from '@/types';
-import ConfirmationDialog from './components/ConfirmationDialog';
+// import ConfirmationDialog from './components/ConfirmationDialog';
+
+const supabase = createClientComponentClient();
 
 const Dashboard: NextPage = () => {
     const { user } = useAuthContext();
     if (!user) return null;
-    
-    const supabase = createClientComponentClient();
-    const [keys, setKeys] = useState<Key[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [keyToDelete, setKeyToDelete] = useState<number | null>(null);
-    
-    useEffect(() => {
-        const fetchKeys = async () => {
-            setLoading(true);
-            const { data, error } = await supabase
-            .from('keys')
-            .select('*')
-            .eq('userId', user.id);
-            
-            setLoading(false);
-            
-            if (error) {
-                toast.error('Error fetching keys!');
-                return;
-            }
 
-            if (!data || !Array.isArray(data)) {
-                toast.error('Unexpected error: Data array missing.');
-                return;
-            }
+    let keys: Key[] = [];
+    let loading = true;
 
-            //Set keys to keys array
-            setKeys(data);
-        };
-        
-        fetchKeys();
-    }, [user, supabase]);
-    
-    const handleAddKey = async (newKey: NewKeyData) => {
-        if (!user) return;
-        
-        if (!newKey.name || !newKey.value) {
-            toast.error('Please enter a valid name and value!');
-            return;
-        }
-        
-        //Sanitize inputs
-        newKey.name = newKey.name.trim();
-        newKey.description = newKey.description?.trim() || '';
-        newKey.value = newKey.value.trim();
-        
-        const { data, error } = await supabase
+    const { data, error } = supabase
         .from('keys')
-        .insert({
-            userId: user.id,
-            name: newKey.name,
-            key: newKey.value,
-            description: newKey.description,
-        });
-        
-        if (error) {
-            toast.error('Error adding key!');
-            return;
-        }
-        
-        if (!data || !Array.isArray(data)) {
-            toast.error('Unexpected error: Data array missing.');
-            return;
-        }
+        .select('*')
+        .eq('userId', user.id);
 
-        if (!data[0]) {
-            toast.error('Unexpected error: Data array empty.');
-            return;
-        }
+    if (data && Array.isArray(data)) {
+        keys = data;
+        loading = false;
+    } else if (error) {
+        toast.error('Error fetching keys!');
+    }
 
-        setKeys([...keys, data[0]]);
-    };
-    
-    const handleDeleteKeyConfirmation = (id: number) => {
-        setKeyToDelete(id);
-        setDeleteDialogOpen(true);
-    };
-    
-    const handleDeleteKey = async () => {
-        if (!keyToDelete) return;
-        
-        const { error } = await supabase
-        .from('keys')
-        .delete()
-        .eq('id', keyToDelete);
-        
-        if (error) {
-            toast.error('Error deleting key!');
-            return;
-        }
-        
-        setKeys(keys.filter((key) => key.id !== keyToDelete));
-        setDeleteDialogOpen(false);
-        setKeyToDelete(null);
-    };
-    
     return (
         <Container>
-        <Typography variant="h4" gutterBottom>Dashboard</Typography>
-        {loading ? <CircularProgress /> : (
-            <>
-            <KeyForm onAdd={handleAddKey} />
-            <KeyList keys={keys} onDelete={handleDeleteKeyConfirmation} />
-            </>
+            <Typography variant="h4" gutterBottom>Dashboard</Typography>
+            {loading ? <CircularProgress /> : (
+                <>
+                    <KeyList keys={keys} />
+                </>
             )}
-            
-            <ConfirmationDialog
-            open={deleteDialogOpen}
-            onClose={() => setDeleteDialogOpen(false)}
-            onConfirm={handleDeleteKey}
-            title="Confirm Deletion"
-            message="Are you sure you want to delete this key?"
-            />
-            </Container>
-            );
-        };
-        
+        </Container>
+    );
+};
+
 export default Dashboard;
-        
+
+/* <Container>
+<Typography variant="h4" gutterBottom>Dashboard</Typography>
+{loading ? <CircularProgress /> : (
+    <>
+        <KeyForm user={user} />
+        <KeyList keys={keys} user={user} />
+    </>
+)}
+<ConfirmationDialog />
+</Container> */
