@@ -46,15 +46,15 @@ export default function LoginMagicLinkForm() {
         <h1> Lumberjane Login </h1>
         <p>Sign in with the magic link, if you don't have an account you'll be automatically signed up for one. </p>
         <Auth
-        supabaseClient={supabase}
-        view='magic_link'
-        appearance={{ theme: ThemeSupa }}
-        theme="dark"
-        showLinks={false}
-        providers={[]}
-        redirectTo="http://localhost:3000/api/v1/auth/callback"
-        onSignIn={handleSignIn}
-        loading={loading}
+            supabaseClient={supabase}
+            view='magic_link'
+            appearance={{ theme: ThemeSupa }}
+            theme="dark"
+            showLinks={false}
+            providers={[]}
+            redirectTo="http://localhost:3000/api/v1/auth/callback"
+            onSignIn={handleSignIn}
+            loading={loading}
         />
     </Container>
     )

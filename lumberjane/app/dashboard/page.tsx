@@ -1,5 +1,4 @@
 import { NextPage } from 'next';
-import { useAuthContext } from '@/context';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
 import { Container, Typography, CircularProgress } from '@mui/material';
@@ -12,8 +11,13 @@ import { cookies } from 'next/headers';
 const Dashboard: NextPage = async () => {
     const supabase = createServerComponentClient({ cookies });
     if (!supabase) return null;
-    const { user } = useAuthContext();
-    if (!user) return null;
+
+    const user = (await supabase.auth.getSession()).data.session?.user;
+
+    if (!user) {
+        toast.error('You must be logged in to view this page!');
+        return null;
+    }
 
     let keys: Key[] = [];
     let loading = true;
@@ -43,14 +47,3 @@ const Dashboard: NextPage = async () => {
 };
 
 export default Dashboard;
-
-/* <Container>
-<Typography variant="h4" gutterBottom>Dashboard</Typography>
-{loading ? <CircularProgress /> : (
-    <>
-        <KeyForm user={user} />
-        <KeyList keys={keys} user={user} />
-    </>
-)}
-<ConfirmationDialog />
-</Container> */

@@ -3,10 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { KeyId } from '@/types';
 
-const supabase = createServerComponentClient({cookies});
-
 export async function DELETE(req: NextRequest) {
     try {
+        const supabase = createServerComponentClient({cookies});
         const requestBody = JSON.parse(await req.text());
         let idsToDelete:KeyId[] = [];
 

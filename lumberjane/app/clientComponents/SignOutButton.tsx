@@ -1,13 +1,14 @@
 "use client"
+
 import { Button } from '@mui/material'
-import { useAuthContext } from '@/context/index'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function SignOutButton() {
-    const { signOut } = useAuthContext()
+  const supabase = createClientComponentClient();
 
   const handleSignOut = () => {
     try {
-        signOut()
+        supabase.auth.signOut();
         window.location.href = '/'
     } catch (error) {
         console.log(error);

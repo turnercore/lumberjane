@@ -5,10 +5,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { Key } from '@/types';
 
-const supabase = createServerComponentClient({cookies});
-
 export async function PUT(req: NextRequest) {
     try {
+        const supabase = createServerComponentClient({cookies});
         const requestBody = JSON.parse(await req.text());
         const keysToUpdate: Partial<Key>[] = Array.isArray(requestBody) ? requestBody : [requestBody];
 

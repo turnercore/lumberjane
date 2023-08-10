@@ -5,10 +5,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { NewKeyData } from '@/types';
 
-const supabase = createServerComponentClient({cookies});
-
 export async function POST(req: NextRequest) {
     try {
+        const supabase = createServerComponentClient({cookies});
         const requestBody = JSON.parse(await req.text());
         const keysToAdd: NewKeyData[] = Array.isArray(requestBody) ? requestBody : [requestBody];
 
