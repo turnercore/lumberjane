@@ -1,8 +1,8 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import Header from '@/components/Header'
-import LoginMagicLinkForm from '@/components/LoginMagicLinkForm'
+import Header from '@/serverComponents/Header'
+import LoginMagicLinkForm from '@/clientComponents/LoginMagicLinkForm'
 import type { User } from '@supabase/supabase-js';
 
 const AuthContext = createContext<AuthContextType>({user: null, signOut: () => {}})

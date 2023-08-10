@@ -1,6 +1,5 @@
-import * as React from "react";
-import Image from "next/image";
-
+"use client"
+import * as React from "react"
 
 export default function Logo() {
     const logoWidth = 50;

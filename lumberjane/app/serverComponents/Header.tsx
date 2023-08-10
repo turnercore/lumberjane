@@ -1,9 +1,8 @@
 import * as React from "react";
 import { Avatar, Button, FormControlLabel, Grid, Switch } from "@mui/material";
-import Logo from "./Logo";
+import Logo from "../clientComponents/Logo";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthContext } from "@/context";
-
 
 export default function Header({ switchTheme }: { switchTheme: any }) {
     const { user } = useAuthContext();

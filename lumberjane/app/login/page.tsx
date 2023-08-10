@@ -2,8 +2,8 @@
 import { Container, Typography } from '@mui/material';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import SignOutButton from '@/components/SignOutButton';
-import LoginMagicLinkForm from '@/components/LoginMagicLinkForm';
+import SignOutButton from '@/clientComponents/SignOutButton';
+import LoginMagicLinkForm from '@/clientComponents/LoginMagicLinkForm';
 
 export default async function LoginPage() {
   const supabase = createServerComponentClient({ cookies });

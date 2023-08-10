@@ -5,19 +5,19 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+// import { Inter } from 'next/font/google'
 import { lightTheme, darkTheme } from '@/theme/theme';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { AuthContextProvider } from '@/context';
 import React, { useState } from 'react';
-import Header from './components/Header';
-import { ToastContainer } from 'react-toastify';
+import Header from './serverComponents/Header';
 import 'react-toastify/dist/ReactToastify.css';
+import Toast from '@/clientComponents/Toast';
 
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 
 const metadata: Metadata = {
   title: 'Lumberjane',
@@ -29,7 +29,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const [user, setUser] = useState(false);
   //Dark Mode switch
   const [isDark, setIsDark] = useState(false);
   const switchTheme: any = () => {
@@ -42,18 +41,8 @@ export default function RootLayout({
         <LocalizationProvider dateAdapter={AdapterDayjs}>
          <CssBaseline />
          <body>
+          <Toast isDark={isDark} />
           <Header switchTheme={switchTheme} />
-          <ToastContainer
-            position="bottom-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme={isDark ? 'dark' : 'light'}
-          />
           <AuthContextProvider>
             {children}
           </AuthContextProvider>
