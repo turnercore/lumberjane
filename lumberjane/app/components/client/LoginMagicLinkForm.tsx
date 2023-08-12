@@ -39,8 +39,6 @@ export default function LoginMagicLinkForm() {
                 showLinks={false}
                 providers={[]}
                 redirectTo="http://localhost:3000/api/v1/auth/callback"
-                onSignIn={handleSignIn}
-                loading={loading}
             />
         </div>
     )

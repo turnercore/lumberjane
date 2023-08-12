@@ -24,7 +24,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ key }),
+          body: JSON.stringify(key),
         })
           .then((response) => response.json())
           .then((data) => {

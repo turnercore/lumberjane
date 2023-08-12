@@ -8,7 +8,7 @@ import { encrypt } from '@/utils/crypto';
 
 export async function POST(req: NextRequest) {
     try {
-        console.log('adding a key to supabase');
+        console.log('!!!!!!adding a key to supabase!!!!!');
         const supabase = createServerComponentClient({cookies});
         const requestBody = JSON.parse(await req.text());
         const keysToAdd: Key[] = Array.isArray(requestBody) ? requestBody : [requestBody];
@@ -19,6 +19,8 @@ export async function POST(req: NextRequest) {
             key.value = encrypted as string;
             //remove decryptedValue from the key object
             delete key.decryptedValue;
+
+            console.log('key to add:', key);
         }
 
         const { data, error } = await supabase
@@ -26,11 +28,14 @@ export async function POST(req: NextRequest) {
             .insert(keysToAdd);
 
         if (error) {
+            console.error('Error adding keys:', error);
             return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
         } else {
+            console.log('keys added:', data);
             return NextResponse.json({ success: true, data });
         }
     } catch(error) {
+        console.log('Error adding keys:', error);
         console.error('Error adding keys:', error);
         return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
     }

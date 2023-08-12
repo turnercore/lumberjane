@@ -32,8 +32,8 @@ const Dashboard: NextPage = async () => {
     // Decrypt keys and add the decrypted value to the key object under 'decryptedValue'
     for (const key of keys) {
         try {
-            console.log('decrypting key...');
-            console.log(key);
+            if (key.decryptedValue) continue;
+            if (!key.value) continue;
             const { decrypted, error } = await decrypt(key.value);
             if (decrypted) {
                 key.decryptedValue = decrypted;

@@ -3,6 +3,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
+import UserAvatar from "./UserAvatar";
 
 export default async function Header() {
   const supabase = createServerComponentClient({ cookies });
@@ -14,15 +15,9 @@ export default async function Header() {
       <div>
         <Logo />
       </div>
-      <div>
-        <p>{!user ? '' : user.email}</p>
-      </div>
       <div className="flex">
         <Link href={user ? "/account" : "/login"}>
-          <Avatar className="w-14 h-14 cursor-pointer bg-primary">
-            <AvatarImage>🪵</AvatarImage>
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <UserAvatar />
         </Link>
       </div>
     </div>
