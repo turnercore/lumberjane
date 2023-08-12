@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from '@mui/material'
+import { Button } from '@/components/ui'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function SignOutButton() {
@@ -16,12 +16,7 @@ export default function SignOutButton() {
   }
 
   return (
-    <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleSignOut()}
-        style={{ width: '100%', marginTop: '1rem' }}
-    >
+    <Button onClick={() => handleSignOut()}>
         Sign Out
     </Button>
   )

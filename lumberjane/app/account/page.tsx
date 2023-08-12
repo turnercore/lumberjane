@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import ProfileForm from './components/ProfileForm';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
@@ -19,7 +18,7 @@ export default async function Account() {
 
     return (
         <div>
-            <Typography variant="h4" gutterBottom align='center'>Account</Typography>
+            <h1>Account</h1>
             <ProfileForm user={user} profile={profile} />
         </div>
     );

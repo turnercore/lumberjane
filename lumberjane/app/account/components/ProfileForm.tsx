@@ -1,13 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { Avatar, Button, TextField, Typography } from '@mui/material';
-import SignOutButton from '@/clientComponents/SignOutButton';
+import { Avatar, AvatarImage, AvatarFallback, Input, Button } from '@/components/ui';
+import SignOutButton from '@/components/client/SignOutButton';
 import type { User } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
 import type { UserProfile } from '@/types';
 
-
-//Fields that we don't want the user to be able to update directly should go here
+// Fields that we don't want the user to be able to update directly should go here
 const omitFields = ['id', 'updated_at', 'avatar_url'];
 
 type ProfileFormProps = {
@@ -46,34 +45,26 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
   return (
     <form
       onSubmit={handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '1rem',
-        padding: '1rem',
-        border: '1px solid #ccc',
-        borderRadius: '0.5rem',
-        maxWidth: '500px',
-        margin: '0 auto',
-      }}
+      className="flex flex-col items-center gap-4 p-4 border rounded-md max-w-md mx-auto"
     >
-      <Avatar alt="User's Avatar" src={formProfile.avatar_url?.toString()} style={{ width: '250px', height: '250px' }} />
-      <Typography variant="h6">{user.email}</Typography>
+      <Avatar className='floating-element w-64 h-64'>
+        <AvatarImage className='"w-full h-full object-cover object-center"' src={formProfile.avatar_url?.toString()} />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      <div className="text-lg">{user.email}</div>
       {Object.keys(formProfile)
         .filter((key) => !omitFields.includes(key))
         .map((key) => (
-          <TextField
+          <Input
             key={key}
             id={key}
-            label={key.charAt(0).toUpperCase() + key.slice(1)} // Capitalize the label
-            variant="outlined"
+            placeholder={key.charAt(0).toUpperCase() + key.slice(1)} // Capitalize the label
             value={formProfile[key as keyof UserProfile] || ''}
-            onChange={(e) => handleChange(key as keyof UserProfile, e.target.value)}
-            style={{ width: '100%' }}
+            onChange={(e: { target: { value: any; }; }) => handleChange(key as keyof UserProfile, e.target.value)}
+            className="w-full"
           />
         ))}
-      <Button variant="contained" color="primary" type="submit" style={{ width: '100%', marginTop: '1rem' }}>
+      <Button>
         {'Update'}
       </Button>
       <SignOutButton />

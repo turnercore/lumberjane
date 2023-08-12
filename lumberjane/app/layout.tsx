@@ -1,14 +1,8 @@
-import '@/globals.scss'
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import '@/globals.css'
 import type { Metadata } from 'next'
-// import { Inter } from 'next/font/google'
-import { ThemeProvider, CssBaseline, Grid, FormControlLabel, Switch } from '@mui/material';
-import Header from './serverComponents/Header';
+import Header from './components/server/Header';
 import 'react-toastify/dist/ReactToastify.css';
-import Toast from '@/clientComponents/Toast';
+import Toast from '@/components/client/Toast';
 
 
 // const inter = Inter({ subsets: ['latin'] })
@@ -26,7 +20,6 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-         <CssBaseline />
         <body>
           <Toast isDark='false' />
           <Header />

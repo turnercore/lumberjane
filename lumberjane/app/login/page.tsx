@@ -1,9 +1,7 @@
-/* eslint-disable react/no-unescaped-entities */
-import { Container, Typography } from '@mui/material';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import SignOutButton from '@/clientComponents/SignOutButton';
-import LoginMagicLinkForm from '@/clientComponents/LoginMagicLinkForm';
+import SignOutButton from '@/components/client/SignOutButton';
+import LoginMagicLinkForm from '@/components/client/LoginMagicLinkForm';
 
 export default async function LoginPage() {
   const supabase = createServerComponentClient({ cookies });
@@ -12,28 +10,16 @@ export default async function LoginPage() {
     data: { session },
   } = await supabase.auth.getSession()
 
-  const user = session?.user
+  const user = session?.user;
   
   if (user) {
     return (
-      <Container
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1rem',
-          padding: '1rem',
-          border: '1px solid #ccc',
-          borderRadius: '0.5rem',
-          maxWidth: '500px',
-          margin: '0 auto',
-        }}
-      >
-        <Typography variant="h4" align="center">
+      <div className="flex flex-col items-center gap-4 p-4 border rounded-md max-w-md mx-auto">
+        <h4 className="text-center">
           You are currently logged in as {user.email}
-        </Typography>
+        </h4>
         <SignOutButton />
-      </Container>
+      </div>
     );
   }
   else {

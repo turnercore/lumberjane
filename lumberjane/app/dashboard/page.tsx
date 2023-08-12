@@ -1,12 +1,9 @@
 import { NextPage } from 'next';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { toast } from 'react-toastify';
-import { Container, Typography, CircularProgress } from '@mui/material';
-// import KeyForm from './components/KeyForm';
 import KeyList from './components/KeyList';
-import { Key, NewKeyData } from '@/types';
+import { Key } from '@/types';
 import { cookies } from 'next/headers';
-// import ConfirmationDialog from './components/ConfirmationDialog';
+import { decrypt } from '@/utils/crypto';
 
 const Dashboard: NextPage = async () => {
     const supabase = createServerComponentClient({ cookies });
@@ -15,12 +12,11 @@ const Dashboard: NextPage = async () => {
     const user = (await supabase.auth.getSession()).data.session?.user;
 
     if (!user) {
-        toast.error('You must be logged in to view this page!');
+        console.log('You must be logged in to view this page!');
         return null;
     }
 
     let keys: Key[] = [];
-    let loading = true;
 
     const { data, error } = await supabase
         .from('keys')
@@ -29,21 +25,34 @@ const Dashboard: NextPage = async () => {
 
     if (data && Array.isArray(data)) {
         keys = data;
-        loading = false;
     } else if (error) {
-        toast.error('Error fetching keys!');
+        console.log('Error fetching keys!');
+    }
+
+    // Decrypt keys and add the decrypted value to the key object under 'decryptedValue'
+    for (const key of keys) {
+        try {
+            console.log('decrypting key...');
+            console.log(key);
+            const { decrypted, error } = await decrypt(key.key);
+            if (decrypted) {
+                key.decryptedValue = decrypted;
+            } else if (error) {
+                console.log('Error decrypting key!');
+                console.log(error);
+            }
+        } catch (err) {
+            console.log('Error decrypting key outside of try!');
+            console.log(err);
+        }
     }
 
     return (
-        <Container>
-            <Typography variant="h4" gutterBottom>Dashboard</Typography>
-            {loading ? <CircularProgress /> : (
-                <>
-                    <KeyList keys={keys} />
-                </>
-            )}
-        </Container>
-    );
-};
+        <div>
+            <h4>Dashboard</h4>
+            <KeyList keys={keys} />
+        </div>
+      );
+    };
 
 export default Dashboard;
