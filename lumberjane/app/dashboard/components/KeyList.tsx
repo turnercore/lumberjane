@@ -7,7 +7,6 @@ import KeyAddDialog from './KeyAddDialog';
 
 const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
   const [keys, setKeys] = useState<Key[]>(initialKeys);
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const prevKeysLength = useRef(keys.length);
 
   const addKey = (key: Key) => {
@@ -94,7 +93,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
             </Button>
           </div>
         ))}
-        <KeyAddDialog onAddKey={addKey} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
+        <KeyAddDialog onAddKey={addKey} />
       </div>
     </TooltipProvider>
   );
