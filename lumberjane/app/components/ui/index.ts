@@ -33,6 +33,17 @@ import {
 
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
 
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose
+} from './dialog';
+
 
 export {
   Avatar,
@@ -70,4 +81,12 @@ export {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
 };

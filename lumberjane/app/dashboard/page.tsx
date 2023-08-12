@@ -34,7 +34,7 @@ const Dashboard: NextPage = async () => {
         try {
             console.log('decrypting key...');
             console.log(key);
-            const { decrypted, error } = await decrypt(key.key);
+            const { decrypted, error } = await decrypt(key.value);
             if (decrypted) {
                 key.decryptedValue = decrypted;
             } else if (error) {
