@@ -51,7 +51,7 @@ const KeyAddDialog = ({ onAddKey }: KeyAddDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button>+</Button>
+        <Button>+ Add New Key</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

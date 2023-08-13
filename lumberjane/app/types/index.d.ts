@@ -9,6 +9,21 @@ export type User = {
     last_sign_in: Date;
 };
 
+export type JwtTokenRequest = {
+    name: string
+    description?: string
+    endpoint: string
+    request: string
+    expectedResponse?: string
+    method: string
+    logEnabled: boolean
+    logResponse: boolean
+    key: string
+    aiEnabled: boolean
+    openAIKey?: string
+}
+
+
 export type User = supabase
 
 // PROFILE TABLE DEFINITION 

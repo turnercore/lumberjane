@@ -26,13 +26,10 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from './alert-dialog';
-
 import {
   Progress,
 } from './progress'
-
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
-
 import {
   Dialog,
   DialogTrigger,
@@ -55,8 +52,6 @@ import {
   NavigationMenuIndicator,
   NavigationMenuViewport,
 } from './navigation-menu';
-
-
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -74,8 +69,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from './dropdown-menu';
-
-
 import {
   Command,
   CommandDialog,
@@ -87,11 +80,28 @@ import {
   CommandShortcut,
   CommandSeparator,
 } from './command';
-
 import { Popover, PopoverTrigger, PopoverContent } from './popover';
+import { DatePickerWithPresets } from './date-picker-with-presets';
+import {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+} from './select';
+import { Calendar } from './calendar';
+import { Checkbox, CheckboxWithDay } from './checkbox';
+import { Textarea } from './textarea';
+import {Switch} from './switch';
 
 
 export {
+  Switch,
+  Calendar,
+  DatePickerWithPresets,
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -171,4 +181,15 @@ export {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  Checkbox,
+  CheckboxWithDay,
+  Textarea,
 };

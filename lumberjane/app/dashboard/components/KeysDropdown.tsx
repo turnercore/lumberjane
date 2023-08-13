@@ -1,5 +1,5 @@
 'use client'
-import { KeyId } from "@/types"
+import { Key, KeyId } from "@/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {   
   Popover,
@@ -34,7 +34,7 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
   const supabase = createClientComponentClient()
   const [keys, setKeys] = useState<DropdownKey[]>([])
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
+  const [pickedKey, setPickedKey] = useState<Key | null>(null)
 
   const fetchKeys = async () => {
     try {
@@ -86,7 +86,7 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value ? keys.find((key) => key.id === value)?.name : "Select key..."}
+          {pickedKey ? pickedKey.name : "Select key..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -98,9 +98,9 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
             {keys.map((key) => (
               <CommandItem
                 key={key.id}
-                value={key.id} // Add value prop here
-                onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue);
+                value={key.name}
+                onSelect={() => {
+                  setPickedKey(key);
                   setOpen(false);
                   setSelectedKey(key.id);
                 }}
@@ -108,7 +108,12 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
                 {key.name}
               </CommandItem>
             ))}
-            <CommandItem onSelect={addNewKey}>Add New Key</CommandItem>
+            <CommandItem onSelect={() => {
+              addNewKey();
+              setOpen(false);
+              setPickedKey(null);
+            }}
+            >+ Add New Key</CommandItem>
           </CommandGroup>
         </Command>
       </PopoverContent>

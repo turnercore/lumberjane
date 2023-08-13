@@ -1,13 +1,24 @@
 "use client";
 import React, { useRef, useEffect, useState } from 'react';
 import type { Key } from '@/types';
-import { Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui';
+import { Label, Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui';
 import KeyAddDialog from './KeyAddDialog';
 
 
 const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
   const [keys, setKeys] = useState<Key[]>(initialKeys);
   const prevKeysLength = useRef(keys.length);
+  // State to keep track of the visibility of each key
+  const [keyVisibility, setKeyVisibility] = useState<Record<string, boolean>>({});
+
+  // Function to toggle the visibility of a key
+  const toggleKeyVisibility = (keyId: string) => {
+    setKeyVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [keyId]: !prevVisibility[keyId],
+    }));
+  };
+
 
   const addKey = (key: Key) => {
     setKeys((prevKeys) => [...prevKeys, key]);
@@ -70,32 +81,30 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
   };
 
   return (
-    <TooltipProvider>
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-gray-200 m-3 p-2">
         {keys.map((key, index) => (
           <div key={key.id} className="flex justify-between items-center py-2">
-            <div>
-              <p className="font-bold">{key.name}</p>
-              <Tooltip>
-                <TooltipTrigger>
-                  <p>{keys[index].decryptedValue ? keys[index].decryptedValue : 'error'}</p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{key.description}</p>
-                </TooltipContent>
-              </Tooltip>
+            <div className='mb-4'>
+              <h3 className="font-bold text-lg">{key.name}</h3>
+              <p className='text-sm'>{key.description}</p>
+              <p>
+                {keyVisibility[key.id!] // Check if the key is visible
+                  ? keys[index].decryptedValue || 'error'
+                  : '*****************************************************'}
+              </p>
             </div>
-            <Button
-              variant="destructive"
-              onClick={() => handleDeleteKey(key)}
-            >
+            <div className="space-x-2">
+            <Button onClick={() => toggleKeyVisibility(key.id!)}>
+                {keyVisibility[key.id!] ? 'Hide' : 'Show'}
+              </Button>
+            <Button variant="destructive" onClick={() => handleDeleteKey(key)}>
               Delete
             </Button>
+            </div>
           </div>
         ))}
         <KeyAddDialog onAddKey={addKey} />
       </div>
-    </TooltipProvider>
   );
 };
 
