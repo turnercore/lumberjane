@@ -118,12 +118,6 @@ Sample Actual Response from OpenAI
   If the expected data could not be found and ai_enabled is true, then Lumberjane will attempt to parse the expression by sending the response and the expected response to ChatGPT and trying to get it
   to parse the response. If that is scucessfull then the repsonse will be returned, if not then appropriate error message will be returned.
 
-
-
-
-
-
-
 Function calling
 In an API call, you can describe functions to gpt-3.5-turbo-0613 and gpt-4-0613, and have the model intelligently choose to output a JSON object containing arguments to call those functions. The Chat Completions API does not call the function; instead, the model generates JSON that you can use to call the function in your code.
 

@@ -75,6 +75,22 @@ import {
   DropdownMenuRadioGroup,
 } from './dropdown-menu';
 
+
+import {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+} from './command';
+
+import { Popover, PopoverTrigger, PopoverContent } from './popover';
+
+
 export {
   Avatar,
   AvatarFallback,
@@ -143,4 +159,16 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 };

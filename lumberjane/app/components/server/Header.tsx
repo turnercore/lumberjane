@@ -2,7 +2,6 @@ import Logo from "../client/Logo";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import UserAvatar from "./UserAvatar";
 
 export default async function Header() {
