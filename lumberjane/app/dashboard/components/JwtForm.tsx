@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { Card } from "@/components/ui";
 import { useState } from "react";
 import type { KeyId } from "@/types"
+import KeysDropdown from "./KeysDropdown";
 
 const jwtSchema = z.object({
   name: z.string().min(2, {
@@ -27,8 +28,8 @@ const jwtSchema = z.object({
   // Add other fields as needed
 });
 
-export function JwtForm() {
-  const [selectedKey, setSelectedKey] = useState<KeyId>(null);
+export default function JwtForm() {
+  const [selectedKey, setSelectedKey] = useState<KeyId>('');
   
   const addNewKey = () => {
     console.log("Adding new key!");
@@ -74,7 +75,7 @@ export function JwtForm() {
               </FormItem>
             )}
           />
-          <JwtForm setSelectedKey={setSelectedKey} addNewKey={addNewKey} />
+          <KeysDropdown setSelectedKey={setSelectedKey} addNewKey={addNewKey} />
           {/* Other sections will go here */}
           <Button type="submit">Create JWT</Button>
         </form>

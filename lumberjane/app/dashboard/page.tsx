@@ -1,5 +1,5 @@
 import type { NextPage } from "next"
-import { JwtForm } from "./components/JwtForm"
+import JwtForm from "./components/JwtForm"
 
 
 const Dashboard: NextPage = async () => {

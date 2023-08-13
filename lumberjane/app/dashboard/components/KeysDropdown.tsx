@@ -21,7 +21,7 @@ import { ChevronsUpDown } from "lucide-react";
 //Props for typescript
 type KeyDropdownProps = {
   setSelectedKey: (keyId: KeyId) => void
-  createKey: () => void
+  addNewKey: () => void
 };
 
 type DropdownKey = {
@@ -30,12 +30,11 @@ type DropdownKey = {
   description: string
 }
 
-export default async function KeyDropdown({ setSelectedKey, createKey } : KeyDropdownProps) {
+export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownProps) {
   const supabase = createClientComponentClient()
   const [keys, setKeys] = useState<DropdownKey[]>([])
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
-  const 
 
   const fetchKeys = async () => {
     try {
@@ -79,7 +78,7 @@ export default async function KeyDropdown({ setSelectedKey, createKey } : KeyDro
   }, [])
 
   return (
-      <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -99,6 +98,7 @@ export default async function KeyDropdown({ setSelectedKey, createKey } : KeyDro
             {keys.map((key) => (
               <CommandItem
                 key={key.id}
+                value={key.id} // Add value prop here
                 onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue);
                   setOpen(false);
@@ -108,7 +108,7 @@ export default async function KeyDropdown({ setSelectedKey, createKey } : KeyDro
                 {key.name}
               </CommandItem>
             ))}
-            <CommandItem onSelect={createKey}>Add New Key</CommandItem>
+            <CommandItem onSelect={addNewKey}>Add New Key</CommandItem>
           </CommandGroup>
         </Command>
       </PopoverContent>
