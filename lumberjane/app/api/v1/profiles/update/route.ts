@@ -1,13 +1,13 @@
 // /api/v1/profiles/update.ts
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { UserProfile } from '@/types';
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createRouteHandlerClient({ cookies });
     const requestBody = JSON.parse(await req.text());
     const updatedProfile: UserProfile = requestBody;
     const userId = updatedProfile.id; // Assuming the user ID is included in the request

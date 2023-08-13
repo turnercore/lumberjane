@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { KeyId } from '@/types';
 
 export async function DELETE(req: NextRequest) {
     try {
-        const supabase = createServerComponentClient({cookies});
+        const supabase = createRouteHandlerClient({cookies});
         const requestBody = JSON.parse(await req.text());
         let idsToDelete:KeyId[] = [];
 

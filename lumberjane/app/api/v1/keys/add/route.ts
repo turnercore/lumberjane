@@ -1,6 +1,6 @@
 // /api/v1/keys/add/route.ts
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { Key } from '@/types';
@@ -9,7 +9,7 @@ import { encrypt } from '@/utils/crypto';
 export async function POST(req: NextRequest) {
     try {
         console.log('!!!!!!adding a key to supabase!!!!!');
-        const supabase = createServerComponentClient({cookies});
+        const supabase = createRouteHandlerClient({cookies});
         const requestBody = JSON.parse(await req.text());
         const keysToAdd: Key[] = Array.isArray(requestBody) ? requestBody : [requestBody];
 

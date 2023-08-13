@@ -1,13 +1,13 @@
 // /api/v1/keys/update/route.ts
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { Key } from '@/types';
 
 export async function PUT(req: NextRequest) {
     try {
-        const supabase = createServerComponentClient({cookies});
+        const supabase = createRouteHandlerClient({cookies});
         const requestBody = JSON.parse(await req.text());
         const keysToUpdate: Partial<Key>[] = Array.isArray(requestBody) ? requestBody : [requestBody];
 
