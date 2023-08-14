@@ -1,7 +1,11 @@
 // User from supabase: Email	Phone	Provider	Created	Last Sign In	User UID	
 
+import { UUID } from "crypto";
+
+export type UUID = UUID;
+
 export type User = {
-    id: string;
+    id: UUID;
     email: string;
     phone: string;
     provider: string;
@@ -11,7 +15,9 @@ export type User = {
 
 export type JwtToken = {
     info: {
-        user: string;
+        key: UUID;
+        id: UUID;
+        user: UUID;
         name: string;
         description?: string;
         method: string;
@@ -19,7 +25,7 @@ export type JwtToken = {
         headers?: Array<{ key: string; value: string }>;
         endpoint: string;
         ai_enabled: boolean;
-        ai_key?: string;
+        ai_key?: UUID;
     };
     restrictions: Array<Object>; // You may want to define a specific type for restrictions
     request: string;
@@ -40,9 +46,9 @@ export type JwtTokenRequest = {
     method: string; // If this is always "POST", you can define it as a string literal type
     logEnabled: boolean;
     logResponse: boolean;
-    key: string;
+    key: UUID;
     aiEnabled: boolean;
-    openAIKey?: string;
+    openAIKey?: UUID;
     restrictions: any[]; // You can replace 'any' with a specific type if you have a defined structure for restrictions
     headers?: Array<{ key: string; value: string }>;
     auth?: Array<{ key: string; value: string }>;
@@ -54,7 +60,7 @@ export type JwtTokenRequest = {
 export type User = supabase
 
 export type UserProfile = {
-    id?: string;
+    id?: UUID;
     name?: string;
     email?: string;
     username?: string;
@@ -63,7 +69,7 @@ export type UserProfile = {
     website?: string;
 };
 
-export type KeyId = string
+export type KeyId = UUID
 
 export type Key = {
     id?: KeyId;

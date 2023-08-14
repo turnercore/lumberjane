@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { JwtToken, JwtTokenRequest } from '@/types';
+import crypto, { UUID } from 'crypto';
 
 const jwtSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this';
 
@@ -10,7 +11,10 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const requestBody: JwtTokenRequest = JSON.parse(await req.text());
-  
+    
+    // Create UUID for record
+    const id = crypto.randomUUID();
+
     //Get the supabase user session
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   
@@ -22,7 +26,9 @@ export async function POST(req: NextRequest) {
   
     const tokenData: JwtToken = {
       info: {
-        user: user.id,
+        id: id,
+        user: user.id as UUID,
+        key: requestBody.key,
         name: requestBody.name,
         description: requestBody.description,
         method: requestBody.method,
@@ -49,10 +55,13 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from('tokens')
       .insert([{
+        id,
         name: tokenData.info.name,
         description: tokenData.info.description,
         user_id: user.id,
-        token
+        token,
+        status: 'active',
+        expiration: requestBody.restrictions?.find((r: any) => r.type === 'expirationDate')?.rule.date || undefined,
       }]);
   
     if (error) {

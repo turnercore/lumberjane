@@ -3,7 +3,7 @@ import crypto from 'crypto';
 // Read the secret key from the environment variables
 const SECRET_KEY = Buffer.from(process.env.LUMBERJANE_MASTER_KEY || '', 'hex');
 
-export async function encrypt(text: string): Promise<{ encrypted?: string; error?: Error; }> {
+export async function encrypt(text: string, passphrase: string = ''): Promise<{ encrypted?: string; error?: Error; }> {
   try {
     // Generate a random initialization vector (IV)
     const iv = crypto.randomBytes(16);
@@ -22,7 +22,7 @@ export async function encrypt(text: string): Promise<{ encrypted?: string; error
 }
 
 
-export async function decrypt(encryptedText: string): Promise<{ decrypted?: string; error?: Error; }> {
+export async function decrypt(encryptedText: string, passphrase: string = ''): Promise<{ decrypted?: string; error?: Error; }> {
   try {
     // Extract the IV from the beginning of the encrypted data
     const iv = Buffer.from(encryptedText.slice(0, 32), 'hex');
