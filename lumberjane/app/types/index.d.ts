@@ -9,19 +9,46 @@ export type User = {
     last_sign_in: Date;
 };
 
+export type JwtToken = {
+    info: {
+        user: string;
+        name: string;
+        description?: string;
+        method: string;
+        auth?: Array<{ key: string; value: string }>
+        headers?: Array<{ key: string; value: string }>;
+        endpoint: string;
+        ai_enabled: boolean;
+        ai_key?: string;
+    };
+    restrictions: Array<Object>; // You may want to define a specific type for restrictions
+    request: string;
+    expectedResponse?: string;
+    log: {
+        enabled: boolean;
+        log_level: string;
+        log_response: boolean;
+    };
+    };
+
 export type JwtTokenRequest = {
-    name: string
-    description?: string
-    endpoint: string
-    request: string
-    restrictions: Array<Object>
-    expectedResponse?: string
-    method: string
-    logEnabled: boolean
-    logResponse: boolean
-    key: string
-    aiEnabled: boolean
-    openAIKey?: string
+    name: string;
+    description?: string;
+    endpoint: string;
+    request: string;
+    expectedResponse?: string;
+    method: string; // If this is always "POST", you can define it as a string literal type
+    logEnabled: boolean;
+    logResponse: boolean;
+    key: string;
+    aiEnabled: boolean;
+    openAIKey?: string;
+    restrictions: any[]; // You can replace 'any' with a specific type if you have a defined structure for restrictions
+    headers?: Array<{ key: string; value: string }>;
+    auth?: Array<{ key: string; value: string }>;
+    logLevel?: string;
+
+
 };
 
 export type User = supabase
