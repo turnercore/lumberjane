@@ -20,7 +20,7 @@ import { ChevronsUpDown } from "lucide-react";
 
 //Props for typescript
 type KeyDropdownProps = {
-  setSelectedKey: (keyId: KeyId) => void
+  onValueChange(value: string): void
   addNewKey: () => void
 };
 
@@ -30,7 +30,7 @@ type DropdownKey = {
   description: string
 }
 
-export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownProps) {
+export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownProps) {
   const supabase = createClientComponentClient()
   const [keys, setKeys] = useState<DropdownKey[]>([])
   const [open, setOpen] = useState(false)
@@ -102,7 +102,7 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
                 onSelect={() => {
                   setPickedKey(key);
                   setOpen(false);
-                  setSelectedKey(key.id);
+                  onValueChange(key.id);
                 }}
               >
                 {key.name}
@@ -112,6 +112,7 @@ export default function KeyDropdown({ setSelectedKey, addNewKey } : KeyDropdownP
               addNewKey();
               setOpen(false);
               setPickedKey(null);
+              onValueChange('');
             }}
             >+ Add New Key</CommandItem>
           </CommandGroup>

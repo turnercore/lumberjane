@@ -14,6 +14,7 @@ export type JwtTokenRequest = {
     description?: string
     endpoint: string
     request: string
+    restrictions: Array<Object>
     expectedResponse?: string
     method: string
     logEnabled: boolean
@@ -48,3 +49,52 @@ export type Key = {
     isSecret?: boolean;
 };
 
+// Restrictions for JWT use
+export type RestrictionType = 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expirationDate';
+
+export interface BaseRestriction {
+  type: RestrictionType;
+  rule: Record<string, any>;
+}
+
+type HeaderRule = {
+    tag: string;
+    value: string;
+};
+
+export interface HeaderRestriction extends BaseRestriction {
+  type: 'headerTags';
+  rule: HeaderRule;
+}
+
+type IpRule = {
+    ipRange: string;
+};
+
+export interface IpRestriction extends BaseRestriction {
+  type: 'ipAddresses';
+  rule: IpRule;
+}
+
+type TimeRule = {
+    start: string; // You might want to use a more specific type here, like a Date object or moment object
+    end: string; // Same as above
+};
+
+export interface TimeRestriction extends BaseRestriction {
+  type: 'timeOfDay';
+  rule: TimeRule;
+}
+
+type ExpirationRule = {
+    date: Date;
+};
+
+export interface ExpirationRestriction extends BaseRestriction {
+  type: 'expirationDate';
+  rule: ExpirationRule;
+}
+
+type Restriction = HeaderRestriction | IpRestriction | TimeRestriction | ExpirationRestriction;
+
+type RestrictionsArray = Restriction[];

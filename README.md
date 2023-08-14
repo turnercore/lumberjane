@@ -35,16 +35,20 @@ Here's roughly what I'm thinking the JWTs should look like when Lumberjane creat
 Along with the JWT the values for the placeholder variables would be sent in the request as a JSON variable or a RESTful paramater. 
 {
     "info": {
-        "user": "downbound",
-        "name": "General OpenAI Integration",
-        "description": "This is a general integration for OpenAI for downbound. It can be used to get a chat completion repsonse from OpenAI."
+        "user": "091u20jcas0d9ivksda", //user id of user that created the jwt
+        "name": "General OpenAI Integration", //name of jwt
+        "description": "This is a general integration for OpenAI for downbound. It can be used to get a chat completion repsonse from OpenAI." //description of jwt, optional
+        "method": "POST", //method that the request will be sent with, default POST
+        "headers": {}, //optional extra headers sent with request
+        "auth": {}, //optional auth info sent with request, default is Bearer token using the API key
+        "endpoint": "https://api.openai.com/v1/chat/completions", //endpoint that the request will be sent to, this is an example
+        "ai_enabled": true, //if true then the response will be sent to OpenAI's GPT to see if it can extract the relevant data from the response
+        "ai_key": "1928u123jlkasc" // id of the key that will be used to send the response to the OpenAI endpoint, will use userid and keyid to lookup the key at request time, optional
     },
 
-    "profile":  {
-        "User-Agent": "GodotEngine"
-        },
+    "restrictions":  [], //skipping for now, will be an empty array and be filled out when i get the form working
 
-    "request": {
+    "request": (JSON from user, should be a JSON object with the request to the endpoint, values can either be hardcoded or in a variable like $$var1$$ which will be filled in with more info from the response when the JWT is submitted.){
         "type": "POST",
         "url": "https://api.openai.com/v1/chat/completions",
         "auth": "lumberjane", //This can be lumberjane (lumberjane has the secret key or token), or bypass (the actual API key will be provided in the key field of the request)
@@ -63,31 +67,13 @@ Along with the JWT the values for the placeholder variables would be sent in the
     
     },
 
-    "expected": {
-        "choices": "array"
-    },
+    "expectedResponse": (JSON Submitted from user, should be a JSON object with the expected response from the endpoint, it should include the key name and the key type (string, int, number, Date, etc)),
 
     "log": {
         "enabled": true, // log the request and response
-        "info": true, // record info in the JWT to the logs
-        "response": { // Optional, if not sepcified entire response will be logged, if specified only the specified fields will be logged
-            "choices": {
-                "index": true,
-                "message": {
-                    "role": true,
-                    "content": true
-                },
-                "finish_reason": true
-            },
-            "usage": {
-                "prompt_tokens": true,
-                "completion_tokens": true,
-                "total_tokens": true
-            }
-        }
-    },
-
-    "ai_enabled": "true" //Determines if AI can be used to parse expected response or not
+        "log_level": "info" // log level for the request and response
+        "log_response": false // log the response from the endpoint
+    }
 }
 
 Along with this JWT the client would also send the answers to the variables that need to be filled either as a JSON object or as html url paramaters
@@ -227,3 +213,15 @@ For example, if you ask the model “Find the weather in Boston this weekend, bo
 If you want to force the model to call a specific function you can do so by setting function_call: {"name": "<insert-function-name>"}. You can also force the model to generate a user-facing message by setting function_call: "none". Note that the default behavior (function_call: "auto") is for the model to decide on its own whether to call a function and if so which function to call.
 
 You can find more examples of function calling in the OpenAI cookbook:
+
+
+Set up the database:
+Right now the project uses supabase to host the database. This was chosen as it offers both auth and row level security on top of a Postgres Database instance. Supabase is self-hostable and open source, so if you want to host your own instance you can do so.
+
+Create the tables:
+- profiles
+- keys
+- tokens
+- logs
+
+Enable RLS on tokens and keys:

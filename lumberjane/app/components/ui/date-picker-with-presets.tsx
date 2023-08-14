@@ -6,7 +6,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 
 import { cn } from "@/utils/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar, CalendarProps } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
@@ -20,8 +20,19 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const DatePickerWithPresets = () => {
-  const [date, setDate] = React.useState<Date>()
+const DatePickerWithPresets = ({ value, onChange }: { value?: Date; onChange?: (date: Date | undefined) => void }) => {
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(value);
+
+  React.useEffect(() => {
+    setSelectedDate(value);
+  }, [value]);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    setSelectedDate(newDate);
+    if (onChange) {
+      onChange(newDate);
+    }
+  };
 
   return (
     <Popover>
@@ -30,17 +41,17 @@ const DatePickerWithPresets = () => {
           variant={"outline"}
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !selectedDate && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex w-auto flex-col space-y-2 p-2">
         <Select
           onValueChange={(value) =>
-            setDate(addDays(new Date(), parseInt(value)))
+            handleDateChange(addDays(new Date(), parseInt(value)))
           }
         >
           <SelectTrigger>
@@ -54,11 +65,12 @@ const DatePickerWithPresets = () => {
           </SelectContent>
         </Select>
         <div className="rounded-md border">
-          <Calendar mode="single" selected={date} onSelect={setDate} />
+          <Calendar mode="single" selected={selectedDate} onSelect={handleDateChange} />
         </div>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
+
 
 export { DatePickerWithPresets }

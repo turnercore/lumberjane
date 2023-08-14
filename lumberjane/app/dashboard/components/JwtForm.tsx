@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   Card,
-  Checkbox,
   Textarea,
   Button,
   Form,
@@ -24,112 +23,63 @@ import {
   SelectValue,
 } from "@/components/ui";
 import { FieldValues, useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import type { KeyId } from "@/types"
+import { useState } from "react";
+import type { JwtTokenRequest, KeyId } from "@/types"
 import KeysDropdown from "./KeysDropdown";
 import { useRouter } from "next/navigation";
 import RestrictionsDropdown from "./RestrictionsDropdown";
-import { VERSION, APP_NAME } from "@/constants";
 
+const expectedResponseExplainer: string = `
+(Optional) Expected response from the endpoint. 
+Format should be a JSON string with types instead of values.
+Example:  { "name" : "string", "age" : "number" } 
+Only fields here will be returned. You can omit fields to make sure they are not returned with the response.
+You can enable AI Assist to help find fields and make sure the response conforms to expected response.
+If the fields cannot be found the server will return an error and no data.
+`;
 
-type JWTFormData = FieldValues & {
-  name: string
-  description?: string
-  endpoint: string
-  request: string
-  expectedResponse?: string
-  method: string
-  logEnabled: boolean
-  logResponse: boolean
-  key: string
-  aiEnabled: boolean
-  openAIKey?: string
-};
 
 
 const isValidJSON = (value: string) => {
-  try {
-    JSON.parse(value);
-    return true;
-  } catch (e) {
-    return false;
+  if(value == '') return true;
+  else {
+    try {
+      JSON.parse(value);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 };
 
 const jwtSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
-  }),
-  description: z.string().min(5, {
-    message: "Description must be at least 5 characters.",
-  }).optional(),
+  }).default(''),
+  description: z.string().default('').optional(),
   endpoint: z.string().url({
     message: "Endpoint must be a valid URL.",
   }),
-  request: z.string().refine(isValidJSON, {
+  request: z.string().min(2, {
+    message: "Request must be at least 2 characters.",
+  }).refine(isValidJSON, {
     message: "Request must be a valid JSON object.",
-  }),
+  }).default(''),
   expectedResponse: z.string().refine(isValidJSON, {
     message: "Expected Response must be a valid JSON object.",
-  }).optional(),
-  method: z.enum(["POST", "GET", "DELETE", "PUT", "PATCH"]),
-  logResponse: z.string().optional(),
+  }).default('').optional(),
+  method: z.enum(["POST", "GET", "DELETE", "PUT", "PATCH"]).default("POST"),
+  logEnabled: z.boolean().default(false),
+  logResponse: z.boolean().default(false),
   key: z.string().min(5, { message: "You must select an API key to use for the request." }),
   aiEnabled: z.boolean().default(false),
-  openAIKey: z.string().min(5, { message: "You must select an OpenAI key to use for the AI assist." }).optional(),
+  openAIKey: z.string().optional().default(''),
 });
 
 
 export default function JwtForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [restrictions, setRestrictions] = useState<any>({});
-  const [selectedKey, setSelectedKey] = useState<KeyId>('');
-  const [logsEnabled, setLogsEnabled] = useState<boolean>(false);
-  const [aiEnabled, setAiEnabled] = useState<boolean>(false);
-  const [openAIKey, setOpenAIKey] = useState<string>('');
-  const [submitClicked, setSubmitClicked] = useState<boolean>(false);
-
-
-  // Whenever the fields are updated then update the JWT object
-  useEffect(() => {
-    const jwt = {
-      //Basic info about the JWT
-      info: {
-        name: form.watch("name"),
-        description: form.watch("description"),
-        apiKey: selectedKey,
-        endpoint: form.watch("endpoint"),
-        method: form.watch("method"),
-        creator: APP_NAME,
-        version: VERSION,
-        created: new Date().toISOString(),
-      },
-      //Restrictions on JWT use
-      restrictions,
-      // Request to the endpoint
-      request: {},
-      //Expected format of the response from the endpoint
-      expected: {},
-      log: {
-        enabled: logsEnabled,
-        logResponse: form.watch("logResponse"),
-      },
-      //If response is not in the expected format, use the AI to try and parse it
-      ai_assist: {
-        enabled: aiEnabled,
-        openAIKey: openAIKey
-      }
-    };
-    //Set value for key in the form
-    form.setValue("key", selectedKey);
-    console.log(jwt);
-  }, [selectedKey, restrictions, submitClicked, logsEnabled, aiEnabled, openAIKey]);
-
-
-  const updateRestrictions = (restrictionsObject: any) => {
-    setRestrictions(restrictionsObject);
-  }
 
   const addNewKey = () => {
     console.log("Adding new key!");
@@ -138,14 +88,29 @@ export default function JwtForm() {
   }
 
   const form = useForm({
+    mode: "onTouched",
     resolver: zodResolver(jwtSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      endpoint: "",
+      request: "",
+      expectedResponse: "",
+      method: "POST",
+      logEnabled: false,
+      logResponse: false,
+      key: "",
+      aiEnabled: false,
+      openAIKey: "",
+      restrictions: [],
+    },
+
   });
 
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = async (data: FieldValues) => {
     console.log('Submitting form data:', data);
     //TODO ADD TOAST
     setIsLoading(true);
-    setSubmitClicked(true);
   
     // Check if AI Assist is enabled and validate the openAIKey field
     if (data.aiEnabled && (!data.openAIKey || data.openAIKey.length < 5)) {
@@ -164,15 +129,39 @@ export default function JwtForm() {
       setIsLoading(false);
       return;
     }
+
+    const jwtData: JwtTokenRequest = {
+      name: data.name,
+      description: data.description || '',
+      endpoint: data.endpoint,
+      method: data.method,
+      request: data.request,
+      expectedResponse: data.expectedResponse || '',
+      key: data.key,
+      restrictions: data.restrictions || [],
+      logResponse: data.logResponse || false,
+      logEnabled: data.logEnabled || false,
+      aiEnabled: data.aiEnabled || false,
+      openAIKey: data.openAIKey || '',
+    };
   
     // Continue processing the valid data
     // Handle submission logic here
     //send data to api (/api/v1/jwt/create)
-    
+    const response = await fetch('/api/v1/jwt/create', {
+      method: 'POST',
+      body: JSON.stringify(jwtData),
+    });
+
+    const responseData = await response.json();
+    console.log(responseData);
+    setIsLoading(false);
+
   };
   
   return (
-    <Card className="mx-auto max-w-3xl mb-20">
+    <Card className="mx-auto max-w-3xl mb-20 p-3">
+      <h1 className='text-center text-xl'>Create a New Request Token</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
@@ -183,9 +172,10 @@ export default function JwtForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="General OpenAI Integration" {...field} />
+                  <Input placeholder="My Lumberjane token." {...field} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>Name for the Token.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -197,23 +187,25 @@ export default function JwtForm() {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="This is a general integration for OpenAI." {...field} />
+                  <Input placeholder="Description to help you remember what the token is for and who should use it." {...field} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>(Optional) description for the Token.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />         
           
-            <FormField
+          <FormField
             control={form.control}
             name="key"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>API Key to Use:</FormLabel>
+                <FormLabel>API Key:</FormLabel>
                 <FormControl>
-                  <KeysDropdown setSelectedKey={setSelectedKey} addNewKey={addNewKey} />
+                  <KeysDropdown onValueChange={field.onChange} addNewKey={addNewKey} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>API Key to use for the request.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -221,40 +213,45 @@ export default function JwtForm() {
           <FormField
             control={form.control}
             name="endpoint"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Endpoint</FormLabel>
                 <FormControl>
                   <Input placeholder="https://api.example.com" {...field} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>Endpoint to use for the request, include the full url.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
 
           <FormField
             control={form.control}
-            name="logsEnabled"
+            name="logEnabled"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
-                <FormLabel>Enable Logging</FormLabel>
+              <FormItem>
+                <FormLabel>Log Request</FormLabel>
                 <FormControl>
-                  <Switch checked={field.value} onCheckedChange={(checked) => form.setValue("logsEnabled", checked)} />
+                  <Switch checked={field.value} onCheckedChange={(checked) => form.setValue("logEnabled", checked)} />
                 </FormControl>
+                <FormDescription>Log who makes requests with the Token.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {form.watch("logsEnabled") && (
+          {form.watch("logEnabled") && (
             <FormField
               control={form.control}
               name="logResponse"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between">
+                <FormItem>
                   <FormLabel>Log Response</FormLabel>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={(checked) => form.setValue("logResponse", checked)} />
                   </FormControl>
+                  <FormDescription>Log the response recieved from the request. CAREFUL! This may contain sensitive information.</FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -264,11 +261,13 @@ export default function JwtForm() {
             control={form.control}
             name="aiEnabled"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between">
-                <FormLabel>Enable AI Assist</FormLabel>
+              <FormItem>
+                <FormLabel>AI Assist</FormLabel>
                 <FormControl>
                   <Switch checked={field.value} onCheckedChange={(checked) => form.setValue("aiEnabled", checked)} />
-                </FormControl>
+                </FormControl><br />
+                <FormDescription>Enable AI assist for the Token. This will use OpenAI to parse response into expected format. Must include expected response when using AI Assist.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -277,13 +276,16 @@ export default function JwtForm() {
             <FormField
               control={form.control}
               name="openAIKey"
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>OpenAI Keys</FormLabel>
+                  <FormLabel>OpenAI Key</FormLabel>
                   <FormControl>
-                    <KeysDropdown setSelectedKey={setOpenAIKey} addNewKey={addNewKey} />
+                    <KeysDropdown onValueChange={field.onChange} addNewKey={addNewKey} />
                   </FormControl>
-                  {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                  <FormDescription>
+                    (Required if AI Assist is on) Your OpenAI key to use for the AI assist. Add an OpenAI API Key to your account if you don't have one.
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -295,23 +297,25 @@ export default function JwtForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Method</FormLabel>
-                <FormControl>
-                  <Select {...field} defaultValue="POST">
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select a method" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Methods</SelectLabel>
-                        <SelectItem value="POST">POST</SelectItem>
-                        <SelectItem value="GET">GET</SelectItem>
-                        <SelectItem value="DELETE">DELETE</SelectItem>
-                        <SelectItem value="PUT">PUT</SelectItem>
-                        <SelectItem value="PATCH">PATCH</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Methods</SelectLabel>
+                      <SelectItem value="POST">POST</SelectItem>
+                      <SelectItem value="GET">GET</SelectItem>
+                      <SelectItem value="DELETE">DELETE</SelectItem>
+                      <SelectItem value="PUT">PUT</SelectItem>
+                      <SelectItem value="PATCH">PATCH</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
                   </Select>
-                </FormControl>
+                  <FormDescription>Method to use for the request.</FormDescription>
+                  <FormMessage />
               </FormItem>
             )}
           />
@@ -325,7 +329,8 @@ export default function JwtForm() {
                 <FormControl>
                   <Textarea placeholder='{"key": "value"}' {...field} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>Request to send to the endpoint.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -333,13 +338,14 @@ export default function JwtForm() {
           <FormField
             control={form.control}
             name="expectedResponse"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Expected Response</FormLabel>
                 <FormControl>
                   <Textarea placeholder='{"key": "value"}' {...field} />
                 </FormControl>
-                {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
+                <FormDescription>{expectedResponseExplainer}</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -349,17 +355,19 @@ export default function JwtForm() {
             name="restrictions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Restrictions</FormLabel>
                 <FormControl>
-                  <RestrictionsDropdown onRestrictionsChange={(value) => form.setValue("restrictions", value)} />
+                  <RestrictionsDropdown onValueChange={field.onChange} />
                 </FormControl>
+                <FormDescription>(Optional) restrictions for the Token. These will be applied to every request.</FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
 
           {/* Other sections will go here */}
-
-          <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="justify-center">Create JWT</Button>
+          <div className="flex justify-center">
+            <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
+          </div>
         </form>
       </Form>
     </Card>

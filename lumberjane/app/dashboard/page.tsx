@@ -7,7 +7,6 @@ const Dashboard: NextPage = async () => {
 
   return (
     <div>
-      <h4>Dashboard</h4>
       <JwtForm />
     </div>
   )

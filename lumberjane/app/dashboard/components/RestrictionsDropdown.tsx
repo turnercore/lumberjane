@@ -1,131 +1,188 @@
-import React, { useEffect, useState } from 'react';
-import { Input, DatePickerWithPresets, Popover, PopoverContent, PopoverTrigger, Command, CommandInput, CommandGroup, CommandItem, Button, Label, CheckboxWithDay } from "@/components/ui";
+import React, { useState } from 'react';
+import { Input, DatePickerWithPresets, Popover, PopoverContent, PopoverTrigger, Command, CommandInput, CommandGroup, CommandItem, Button, Label, CheckboxWithDay, Select, FormControl, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui";
+
+import type { RestrictionType, Restriction, IpRule, ExpirationRule, HeaderRule, TimeRule, ExpirationRestriction, HeaderRestriction, IpRestriction, TimeRestriction } from '@/types';
 
 type RestrictionInputProps = {
-  type: 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expirationDate';
+  type: RestrictionType;
+  data: HeaderRule | IpRule | TimeRule | ExpirationRule;
+  updateData: (data: HeaderRule | IpRule | TimeRule | ExpirationRule) => void;
   remove: () => void;
 };
 
-type RestrictionType = 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expirationDate';
-type Restriction = {
-  type: RestrictionType;
-  data: Record<string, any>; // You can define a more specific type for data if needed
-};
-
 type RestrictionsDropdownProps = {
-  onRestrictionsChange: (restrictionsObject: any) => void;
+  onValueChange: (value: Restriction[]) => void;
 };
 
-export default function RestrictionsDropdown({onRestrictionsChange}: RestrictionsDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [headerTags, setHeaderTags] = useState([]);
-  const [ipAddresses, setIpAddresses] = useState([]);
-  const [timeOfDay, setTimeOfDay] = useState(null);
-  const [expirationDate, setExpirationDate] = useState(null);
+export default function RestrictionsDropdown({ onValueChange }: RestrictionsDropdownProps) {
   const [restrictions, setRestrictions] = useState<Restriction[]>([]);
 
-  // Rebuild the restrictions object whenever any of the individual parts change
-  useEffect(() => {
-    const restrictions = {
-      headerTags,
-      ipAddresses,
-      timeOfDay,
-      expirationDate,
-    };
-    onRestrictionsChange(restrictions);
-  }, [headerTags, ipAddresses, timeOfDay, expirationDate, onRestrictionsChange]);
-
   const addRestriction = (type: RestrictionType) => {
-    if (type === 'expirationDate' && restrictions.some(r => r.type === 'expirationDate')) {
-      // If an expiration date restriction is already present, do not add another one
-      return;
+    let newRestriction: Restriction;
+  
+    switch (type) {
+      case 'headerTags':
+        newRestriction = { type, rule: { tag: '', value: '' } };
+        break;
+      case 'ipAddresses':
+        newRestriction = { type, rule: { ipRange: '' } };
+        break;
+      case 'timeOfDay':
+        newRestriction = { type, rule: { start: '', end: '' } };
+        break;
+      case 'expirationDate':
+        newRestriction = { type, rule: { date: new Date() } };
+        break;
     }
-    setRestrictions([...restrictions, { type, data: {} }]);
+  
+    setRestrictions([...restrictions, newRestriction]);
+  };
+
+  const updateRestrictionData = (index: number, restriction: Restriction) => {
+    let updatedRestriction: Restriction;
+
+    switch (restriction.type) {
+      case 'headerTags':
+        updatedRestriction = restriction as HeaderRestriction;
+        break;
+      case 'ipAddresses':
+        updatedRestriction = restriction as IpRestriction;
+        break;
+      case 'timeOfDay':
+        updatedRestriction = restriction as TimeRestriction;
+        break;
+      case 'expirationDate':
+        updatedRestriction = restriction as ExpirationRestriction;
+        break;
+    }
+
+    const updatedRestrictions = [...restrictions];
+    updatedRestrictions[index] = restriction;
+    setRestrictions(updatedRestrictions);
+    onValueChange(updatedRestrictions);
   };
 
   const removeRestriction = (index: number) => {
-    setRestrictions(restrictions.filter((_, i) => i !== index));
+    const updatedRestrictions = [...restrictions];
+    updatedRestrictions.splice(index, 1);
+    setRestrictions(updatedRestrictions);
+    onValueChange(updatedRestrictions);
   };
 
   return (
-    <div>
-      <Label className='text-xl'>Restrictions and Security (Optional)</Label>
+    <div className='space-y-4'>
+      <h2> Security & Restrictions </h2>
       <div className='space-y-4'>
         {restrictions.map((restriction, index) => (
           <RestrictionInput
             key={index}
             type={restriction.type}
+            data={restriction.rule}
+            updateData={(data) => updateRestrictionData(index, { ...restriction })}
             remove={() => removeRestriction(index)}
           />
         ))}
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button>+ Add New Restriction</Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Command>
-              <CommandInput placeholder="Search restriction..." />
-              <CommandGroup>
-                <CommandItem onSelect={() => addRestriction('headerTags')}>Header Tags</CommandItem>
-                <CommandItem onSelect={() => addRestriction('ipAddresses')}>IP Addresses</CommandItem>
-                <CommandItem onSelect={() => addRestriction('timeOfDay')}>Time of Day</CommandItem>
-                <CommandItem onSelect={() => addRestriction('expirationDate')}>Expiration Date</CommandItem>
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
       </div>
+      <Select onValueChange={(value) => addRestriction(value as RestrictionType)}>
+        <FormControl>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Add Restriction" />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Restrictions</SelectLabel>
+            <SelectItem value="headerTags">Add Header Tag Restriction</SelectItem>
+            <SelectItem value="ipAddresses">Add IP Address Restriction</SelectItem>
+            <SelectItem value="timeOfDay">Add Time of Day Restriction</SelectItem>
+            <SelectItem value="expirationDate">Add Expiration Date Restriction</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
     </div>
   );
 }
 
-function RestrictionInput({ type, remove }: RestrictionInputProps) {
+function RestrictionInput({ type, data, updateData, remove }: RestrictionInputProps) {
   switch (type) {
     case 'headerTags':
+      data = data as HeaderRule;
       return (
         <div className="flex items-center space-x-2">
           <Label>Header:</Label>
-          <Input type="text" placeholder="Header" className="w-32" />
+          <Input
+            type="text"
+            placeholder="Header"
+            className="w-32"
+            value={data.tag || ''}
+            onChange={(e) => updateData({ ...data, tag: e.target.value })}
+          />
           <Label>Value:</Label>
-          <Input type="text" placeholder="Value" className="w-32" />
+          <Input
+            type="text"
+            placeholder="Value"
+            className="w-32"
+            value={data.value || ''}
+            onChange={(e) => updateData({ ...data, value: e.target.value })}
+          />
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
       );
     case 'ipAddresses':
+      data = data as IpRule;
       return (
         <div className="flex items-center space-x-2">
           <Label>IP Address Range (CIDR):</Label>
-          <Input type="text" placeholder="192.168.1.0/24" className="w-32"/>
+          <Input
+            type="text"
+            placeholder="192.168.1.0/24"
+            className="w-32"
+            value={data.ipRange || ''}
+            onChange={(e) => updateData({ ...data, ipRange: e.target.value })}
+          />
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
       );
     case 'timeOfDay':
+      data = data as TimeRule;
       return (
         <div className="flex items-center space-x-2">
           <Label>Usage Restricted During:</Label>
-          <Input className='w-32' type="time" />
+          <Input
+            className='w-32'
+            type="time"
+            value={data.start || ''}
+            onChange={(e) => updateData({ ...data, start: e.target.value })}
+          />
           <p> to </p>
-          <Input className='w-32' type="time" />
+          <Input
+            className='w-32'
+            type="time"
+            value={data.end || ''}
+            onChange={(e) => updateData({ ...data, end: e.target.value })}
+          />
           <div className="flex space-x-1 items-center">
-            <CheckboxWithDay id="monday" label="M" />
-            <CheckboxWithDay id="tuesday" label="T" />
-            <CheckboxWithDay id="wednesday" label="W" />
-            <CheckboxWithDay id="thursday" label="T" />
-            <CheckboxWithDay id="friday" label="F" />
-            <CheckboxWithDay id="saturday" label="S" />
-            <CheckboxWithDay id="sunday" label="S" />
+            {/* You can implement logic to handle day selection here */}
           </div>
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
       );
-      case 'expirationDate':
-        return (
-          <div className="flex items-center space-x-2">
-            <Label>Expiration Date:</Label>
-            <DatePickerWithPresets />
-            <Button variant='destructive' onClick={remove}>-</Button>
-          </div>
-        );
+    case 'expirationDate':
+      data = data as ExpirationRule;
+      if (!data.date) {
+        data.date = new Date();
+        console.log("Something is going on setting the date...")
+      }
+      return (
+        <div className="flex items-center space-x-2">
+          <Label>Expiration Date:</Label>
+          <DatePickerWithPresets
+            value={data.date || undefined}
+            onChange={(date) => updateData({ ...data, date: date! })}
+          />
+          <Button variant='destructive' onClick={remove}>-</Button>
+        </div>
+      );
     default:
       return null;
   }

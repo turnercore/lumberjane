@@ -96,7 +96,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
             <div className="space-x-2">
             <Button onClick={() => toggleKeyVisibility(key.id!)}>
                 {keyVisibility[key.id!] ? 'Hide' : 'Show'}
-              </Button>
+            </Button>
             <Button variant="destructive" onClick={() => handleDeleteKey(key)}>
               Delete
             </Button>
