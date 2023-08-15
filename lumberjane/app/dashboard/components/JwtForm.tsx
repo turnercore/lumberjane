@@ -245,7 +245,8 @@ export default function JwtForm() {
               </FormItem>
             )}
           />  
-          
+
+          {form.watch("authType") === "bearer" && (
           <FormField
             control={form.control}
             name="key"
@@ -260,6 +261,7 @@ export default function JwtForm() {
               </FormItem>
             )}
           />
+        )}
 
           <FormField
             control={form.control}
