@@ -40,6 +40,7 @@ export type JwtToken = {
 export type JwtTokenRequest = {
     name: string;
     description?: string;
+    authType: string;
     endpoint: string;
     request: string;
     expectedResponse?: string;

@@ -38,8 +38,6 @@ You can enable AI Assist to help find fields and make sure the response conforms
 If the fields cannot be found the server will return an error and no data.
 `;
 
-
-
 const isValidJSON = (value: string) => {
   if(value == '') return true;
   else {
@@ -71,9 +69,19 @@ const jwtSchema = z.object({
   method: z.enum(["POST", "GET", "DELETE", "PUT", "PATCH"]).default("POST"),
   logEnabled: z.boolean().default(false),
   logResponse: z.boolean().default(false),
-  key: z.string().min(5, { message: "You must select an API key to use for the request." }),
+  key: z.string().optional().default(''),
+  restrictions: z.array(z.string()).default([]),
+  authType: z.enum(["bearer", "basic"]).default("bearer"),
   aiEnabled: z.boolean().default(false),
   openAIKey: z.string().optional().default(''),
+}).superRefine((obj, ctx) => {
+  if (obj.authType === "bearer" && obj.key.length < 5) {
+    ctx.addIssue({
+      path: ['key'],
+      message: "You must select an API key to use for the request.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
 });
 
 
@@ -103,6 +111,7 @@ export default function JwtForm() {
       aiEnabled: false,
       openAIKey: "",
       restrictions: [],
+      authType: "bearer",
     },
 
   });
@@ -132,6 +141,7 @@ export default function JwtForm() {
 
     const jwtData: JwtTokenRequest = {
       name: data.name,
+      authType: data.authType || 'bearer',
       description: data.description || '',
       endpoint: data.endpoint,
       method: data.method,
@@ -168,7 +178,7 @@ export default function JwtForm() {
           <FormField
             control={form.control}
             name="name"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
@@ -183,7 +193,7 @@ export default function JwtForm() {
           <FormField
             control={form.control}
             name="description"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
@@ -193,7 +203,48 @@ export default function JwtForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />         
+          />      
+
+          <FormField
+            control={form.control}
+            name="endpoint"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Endpoint</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://api.example.com" {...field} />
+                </FormControl>
+                <FormDescription>Endpoint to use for the request, include the full url.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> 
+
+          <FormField
+            control={form.control}
+            name="authType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Auth Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select a method" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>API Authentication Type</SelectLabel>
+                      <SelectItem value="bearer">Bearer-Token</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                  </Select>
+                  <FormDescription>Auth Type to use for the request.</FormDescription>
+                  <FormMessage />
+              </FormItem>
+            )}
+          />  
           
           <FormField
             control={form.control}
@@ -205,21 +256,6 @@ export default function JwtForm() {
                   <KeysDropdown onValueChange={field.onChange} addNewKey={addNewKey} />
                 </FormControl>
                 <FormDescription>API Key to use for the request.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="endpoint"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endpoint</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://api.example.com" {...field} />
-                </FormControl>
-                <FormDescription>Endpoint to use for the request, include the full url.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -323,7 +359,7 @@ export default function JwtForm() {
           <FormField
             control={form.control}
             name="request"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Request</FormLabel>
                 <FormControl>
