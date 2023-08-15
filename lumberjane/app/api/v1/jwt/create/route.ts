@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
         description: requestBody.description,
         method: requestBody.method,
         headers: requestBody.headers || undefined,
+        authType: requestBody.authType || 'bearer',
         auth: requestBody.auth || undefined,
         endpoint: requestBody.endpoint,
         ai_enabled: requestBody.aiEnabled || false,
@@ -47,6 +48,11 @@ export async function POST(req: NextRequest) {
         log_response: requestBody.logResponse || false,
       }
     };
+
+    if(tokenData.info.authType === 'none') {
+      tokenData.info.auth = undefined;
+      tokenData.info.key = undefined;
+    }
 
     // Create the JWT token
     const token = jwt.sign(tokenData, jwtSecret);

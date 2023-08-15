@@ -13,14 +13,17 @@ export type User = {
     last_sign_in: Date;
 };
 
+type authType = 'none' | 'bearer'
+
 export type JwtToken = {
     info: {
-        key: UUID;
+        key?: UUID;
         id: UUID;
         user: UUID;
         name: string;
         description?: string;
         method: string;
+        authType: authType;
         auth?: Array<{ key: string; value: string }>
         headers?: Array<{ key: string; value: string }>;
         endpoint: string;
@@ -40,7 +43,7 @@ export type JwtToken = {
 export type JwtTokenRequest = {
     name: string;
     description?: string;
-    authType: string;
+    authType: AuthType;
     endpoint: string;
     request: string;
     expectedResponse?: string;
