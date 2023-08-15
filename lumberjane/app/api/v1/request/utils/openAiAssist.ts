@@ -1,13 +1,14 @@
+import { StandardResponse } from "@/types";
 import { Configuration, OpenAIApi } from "openai";
 
-export default async function openAiAssist(apiKey: string, request: string, expectedResponse: string){
+export default async function openAiAssist(apiKey: string, request: string, expectedResponse: string): Promise<StandardResponse> {
   const content = `
   Response:
   ${request}
   
   Expected Response Schema:
   ${expectedResponse}
-  `
+  `;
 
   const configuration = new Configuration({
     apiKey
@@ -33,23 +34,23 @@ export default async function openAiAssist(apiKey: string, request: string, expe
     presence_penalty: 0,
   });
 
-  //get json from ai response
-  const aiResponse = response.data.choices[1].message?.content;
+  // Get JSON from AI response
+  const aiResponse = response.data.choices[0]?.message?.content; // Fixed index to 0
   if (!aiResponse) {
-    return '';
+    return { error: { message: 'No response from AI.', status: 500 } };
   }
-  //Delete everything before the first { and after the last }
+  // Delete everything before the first { and after the last }
   const json = aiResponse.substring(aiResponse.indexOf("{"), aiResponse.lastIndexOf("}") + 1);
 
-  //Parse the json to check for errors
+  // Parse the JSON to check for errors
   try {
     const parsedResponse = JSON.parse(json);
     if (parsedResponse.error) {
-      return 'Error: ' + parsedResponse.error;
-    } else {
-      return parsedResponse;
+      return { error: { message: 'Error: ' + parsedResponse.error, status: 500 } };
     }
+    
+    return { data: parsedResponse };
   } catch (e) {
-    return {error: 'Invalid JSON returned.'};
+    return { error: { message: 'Invalid JSON returned.', status: 400 } };
   }
 }

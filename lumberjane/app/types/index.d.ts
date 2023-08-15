@@ -40,6 +40,8 @@ export type JwtToken = {
     };
     };
 
+export type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'CONNECT' | 'TRACE';
+
 export type JwtTokenRequest = {
     name: string;
     description?: string;
@@ -47,7 +49,7 @@ export type JwtTokenRequest = {
     endpoint: string;
     request: string;
     expectedResponse?: string;
-    method: string; // If this is always "POST", you can define it as a string literal type
+    method: RequestMethod; // If this is always "POST", you can define it as a string literal type
     logEnabled: boolean;
     logResponse: boolean;
     key: UUID;
@@ -135,3 +137,16 @@ export interface ExpirationRestriction extends BaseRestriction {
 type Restriction = HeaderRestriction | IpRestriction | TimeRestriction | ExpirationRestriction;
 
 type RestrictionsArray = Restriction[];
+
+export interface ServerError {
+    message: string;
+    status: number;
+}
+
+export interface StandardResponse {
+    error?: {
+      message: string;
+      status: number;
+    };
+    data?: any;
+  };
