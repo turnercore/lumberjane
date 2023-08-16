@@ -7,53 +7,73 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
 const jwtSecret = process.env.LUMBERJANE_MASTER_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-export default async function validateToken(token: string): Promise<StandardResponse> {
-  const error: ServerError = { message: '', status: 500};
-
-  if (!token) {
-    error.message = 'Lumberjane token is required.';
-    error.status = 401;
+export default async function validateToken(token: string, isTest: boolean = false): Promise<StandardResponse> {
+  const decodedToken = verifyToken(token);
+  if (!decodedToken) {
+    const error = {
+      message: 'Invalid token.',
+      status: 401,
+    };
     return { error };
   }
 
-  // Verify the token
-  let decodedToken: JwtToken;
+  if (!isTest) {
+  const isExpired = await checkExpiration(decodedToken);
+  if (isExpired) {
+    const error = {
+      message: 'Token has expired.',
+      status: 401,
+    };
+    return { error };
+  }
+}
+
+  if (!isTest) {
+    const isRevoked = await checkRevocation(decodedToken);
+    if (isRevoked) {
+      const error = {
+        message: 'Token has been revoked or frozen.',
+        status: 401,
+      };
+      return { error };
+    }
+  }
+
+  const data: JwtToken = decodedToken;
+  return { data };
+}
+
+function verifyToken(token: string): JwtToken | void {
   try {
-    decodedToken = jwt.verify(token, jwtSecret) as JwtToken;
+    const decodedToken = jwt.verify(token, jwtSecret) as JwtToken;
+    return decodedToken;
   } catch (err) {
-    error.message = 'Invalid token.';
-    error.status = 401;
-    return { error };
+    return;
   }
+}
 
-  // Check for expiration in the database
+async function checkExpiration(decodedToken: JwtToken): Promise<boolean> {
+  const expirationRestriction: ExpirationRestriction = decodedToken.restrictions?.find((r: any) => r.type === 'expirationDate') as ExpirationRestriction;
+  if (expirationRestriction && new Date(expirationRestriction.rule.date) < new Date()) {
+    return true;
+  }
   const { data: tokenRecord, error: dbError } = await supabase
     .from('tokens')
     .select('expiration')
     .eq('id', decodedToken.info.id);
 
   if (dbError) {
-    console.error('Database error when checking token expiration:', dbError);
-    error.message = 'Database error when checking token expiration.';
-    error.status = 500;
-    return { error };
+    return true;
   }
 
   if (tokenRecord && tokenRecord[0]?.expiration && new Date(tokenRecord[0].expiration) < new Date()) {
-    error.message = 'Token has expired.';
-    error.status = 401;
-    return { error };
+    return true;
   }
 
-  // Check for expiration in the token restrictions
-  const expirationRestriction: ExpirationRestriction = decodedToken.restrictions?.find((r: any) => r.type === 'expirationDate') as ExpirationRestriction;
-  if (expirationRestriction && new Date(expirationRestriction.rule.date) < new Date()) {
-    error.message = 'Token has expired.';
-    error.status = 401;
-    return { error };
-  }
+  return false;
+}
 
-  // Check to make sure the token has not been revoked by checking the database
+async function checkRevocation(decodedToken: JwtToken): Promise<boolean> {
   const { data: tokenData, error: supabaseError } = await supabase
     .from('tokens')
     .select('status')
@@ -61,12 +81,8 @@ export default async function validateToken(token: string): Promise<StandardResp
     .single();
 
   if (supabaseError || tokenData.status !== 'active') {
-    error.message = 'Token has been revoked or frozen.';
-    error.status = 401;
-    return { error };
+    return true;
   }
 
-  const data: JwtToken = decodedToken;
-
-  return { data };
+  return false;
 }

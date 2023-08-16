@@ -5,9 +5,18 @@ export async function POST(req: NextRequest) {
   try {
     const requestBody = JSON.parse(await req.text());
     const token = requestBody.lumberjane_token;
+    let ip = req.ip ?? req.headers.get('x-real-ip');
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    if (!ip && forwardedFor) {
+      ip = forwardedFor.split(',').at(0) ?? 'Unknown';
+    }
+    const isLocalRequest = ip === '127.0.0.1' || ip === '::1';
+    const isTest = req.headers.get('X-Lumberjane-Test') === 'true' && isLocalRequest;
+
 
     // Validate the token
-    const { data: decodedToken, error: validateError } = await validateToken(token);
+
+    const { data: decodedToken, error: validateError } = await validateToken(token, isTest);
     if (validateError || !decodedToken) {
       return NextResponse.json({ error: [validateError ? validateError.message : 'error validating token'] }, { status: validateError ? validateError.status : 500 });
     }
@@ -19,11 +28,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Make the API request
-    const method = decodedToken.info.method || 'POST';
-    const headers = preparedRequest.headers;
-    const body = preparedRequest.body;
-    const endpoint = decodedToken.info.endpoint;
-    const { data: responseData, error: apiError } = await makeApiRequest(method, endpoint, headers, body);
+    const { data: responseData, error: apiError } = await makeApiRequest(
+      decodedToken.info.method || 'POST', 
+      decodedToken.info.endpoint, 
+      preparedRequest.headers, 
+      preparedRequest.body);
     if (apiError ) {
       return NextResponse.json({ error: [apiError.message] }, { status: apiError.status });
     }
