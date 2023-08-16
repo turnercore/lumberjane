@@ -38,13 +38,17 @@ export async function POST(req: NextRequest) {
     }
 
     // If there is an expected response, try to fit the response into the expected response schema
-    if(decodedToken.expectedResponse) {
-      const { data: formattedResponse, error: processResponseError } = await processResponse(decodedToken, responseData, requestBody);
+    if(decodedToken.info.formatResponse) {
+      const { data: formattedResponse, error: processResponseError } = await processResponse(responseData, decodedToken.expectedResponse, decodedToken.info.ai_enabled);
       if (processResponseError) {
         return NextResponse.json({ error: [processResponseError.message] }, { status: processResponseError.status });
       }
+      console.log('success, returning formatted response');
+      console.log(formattedResponse);
       return NextResponse.json(formattedResponse, { status: 200 });
     } else {     // If there is no expected response, just return the response as is
+      console.log('success, returning response');
+      console.log(responseData);
       return NextResponse.json(responseData, { status: 200 });
     }
 

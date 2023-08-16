@@ -13,7 +13,8 @@ type AiAssistOptions = {
 export default async function processResponse(response: any, expectedResponse: any = '', aiAssist: AiAssistOptions = { enabled: false }): Promise<StandardResponse> {
   try {
     // If there is no expected Response to try to conform to, just return the response
-    if (!expectedResponse) {
+    if (Object.keys(expectedResponse).length === 0 || Object.keys(response).length === 0) {
+      console.log('got empty repsonse or expectedResponse')
       return { data: response };
     }
 

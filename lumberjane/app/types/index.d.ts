@@ -19,6 +19,7 @@ export type JwtToken = {
     info: {
         key?: UUID;
         id: UUID;
+        formatResponse: boolean;
         user: UUID;
         name: string;
         description?: string;
@@ -41,29 +42,6 @@ export type JwtToken = {
     };
 
 export type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD' | 'CONNECT' | 'TRACE';
-
-export type JwtTokenRequest = {
-    name: string;
-    description?: string;
-    authType: AuthType;
-    endpoint: string;
-    request: string;
-    expectedResponse?: string;
-    method: RequestMethod; // If this is always "POST", you can define it as a string literal type
-    logEnabled: boolean;
-    logResponse: boolean;
-    key: UUID;
-    aiEnabled: boolean;
-    openAIKey?: UUID;
-    restrictions: any[]; // You can replace 'any' with a specific type if you have a defined structure for restrictions
-    headers?: Array<{ key: string; value: string }>;
-    auth?: Array<{ key: string; value: string }>;
-    logLevel?: string;
-
-
-};
-
-export type User = supabase
 
 export type UserProfile = {
     id?: UUID;
@@ -91,52 +69,42 @@ export type Key = {
 // Restrictions for JWT use
 export type RestrictionType = 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expirationDate';
 
-export interface BaseRestriction {
+export interface Restriction {
   type: RestrictionType;
-  rule: Record<string, any>;
+  rule: {
+    [key: string]: any;
+  }
 }
 
-type HeaderRule = {
-    tag: string;
-    value: string;
-};
-
-export interface HeaderRestriction extends BaseRestriction {
+export interface HeaderRestriction extends Restriction {
   type: 'headerTags';
-  rule: HeaderRule;
+  rule: {
+    tagName: string;
+    tagValue: string;
+  };
 }
 
-type IpRule = {
-    ipRange: string;
-};
-
-export interface IpRestriction extends BaseRestriction {
+export interface IpRestriction extends Restriction {
   type: 'ipAddresses';
-  rule: IpRule;
+  rule: {
+    ipRange: string;
+  };
 }
 
-type TimeRule = {
-    start: string; // You might want to use a more specific type here, like a Date object or moment object
-    end: string; // Same as above
-};
-
-export interface TimeRestriction extends BaseRestriction {
+export interface TimeRestriction extends Restriction {
   type: 'timeOfDay';
-  rule: TimeRule;
+  rule: {
+    startTime: string;
+    endTime: string;
+  };
 }
 
-type ExpirationRule = {
-    date: Date;
-};
-
-export interface ExpirationRestriction extends BaseRestriction {
+export interface ExpirationRestriction extends Restriction {
   type: 'expirationDate';
-  rule: ExpirationRule;
+  rule: {
+    expirationDate: Date;
+  };
 }
-
-type Restriction = HeaderRestriction | IpRestriction | TimeRestriction | ExpirationRestriction;
-
-type RestrictionsArray = Restriction[];
 
 export interface ServerError {
     message: string;
@@ -150,3 +118,22 @@ export interface StandardResponse {
     };
     data?: any;
   };
+
+export interface TokenFormFields {
+  name: string;
+  description?: string;
+  authType: AuthType;
+  endpoint: string;
+  request?: string;
+  expectedResponse?: string;
+  method: RequestMethod; // If this is always "POST", you can define it as a string literal type
+  logEnabled: boolean;
+  logResponse: boolean;
+  key?: UUID;
+  aiEnabled: boolean;
+  openAIKey?: UUID;
+  restrictions?: Restriction[];
+  headers?: Array<{ key: string; value: string }>;
+  auth?: Array<{ key: string; value: string }>;
+  logLevel?: string;
+};

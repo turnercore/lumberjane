@@ -20,14 +20,18 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue,  
 } from "@/components/ui";
 import { FieldValues, useForm } from "react-hook-form";
 import { useState } from "react";
-import type { JwtTokenRequest, KeyId } from "@/types"
+import type { TokenFormFields } from "@/types"
 import KeysDropdown from "./KeysDropdown";
 import { useRouter } from "next/navigation";
 import RestrictionsDropdown from "./RestrictionsDropdown";
+import { set } from "date-fns";
+import TestSheet from "./TestSheet";
+import { pokeApiExampleSnorlax, pokeApiExampleSnorlaxNameOnly } from "./examples/tokenExamples";
+import { fromTheme } from "tailwind-merge";
 
 const expectedResponseExplainer: string = `
 (Optional) Expected response from the endpoint. 
@@ -56,13 +60,9 @@ const jwtSchema = z.object({
   }).default(''),
   description: z.string().default('').optional(),
   endpoint: z.string().url({
-    message: "Endpoint must be a valid URL.",
+    message: ")Endpoint must be a valid URL.",
   }),
-  request: z.string().min(2, {
-    message: "Request must be at least 2 characters.",
-  }).refine(isValidJSON, {
-    message: "Request must be a valid JSON object.",
-  }).default(''),
+  request: z.string().default('').optional(),
   expectedResponse: z.string().refine(isValidJSON, {
     message: "Expected Response must be a valid JSON object.",
   }).default('').optional(),
@@ -71,7 +71,7 @@ const jwtSchema = z.object({
   logResponse: z.boolean().default(false),
   key: z.string().optional().default(''),
   restrictions: z.array(z.string()).default([]),
-  authType: z.enum(["bearer", "basic"]).default("bearer"),
+  authType: z.enum(["bearer", "none"]).default("bearer"),
   aiEnabled: z.boolean().default(false),
   openAIKey: z.string().optional().default(''),
 }).superRefine((obj, ctx) => {
@@ -82,16 +82,27 @@ const jwtSchema = z.object({
       code: z.ZodIssueCode.custom,
     });
   }
+  if (obj.method === "POST" && (!obj.request || !isValidJSON(obj.request))) {
+    ctx.addIssue({
+      path: ['request'],
+      message: "Request must be a valid JSON object for POST method.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
 });
 
 
 export default function JwtForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [testResult, setTestResult] = useState<string | null>(null);
+  const [testError, setTestError] = useState<string | null>(null);
+  const [isTesting, setIsTesting] = useState<boolean>(false);
 
   const addNewKey = () => {
     console.log("Adding new key!");
     //For now redirect to the /keys page
+    //This will instead be a sheet that pops up to add a new key
     router.push("/keys");
   }
 
@@ -139,14 +150,14 @@ export default function JwtForm() {
       return;
     }
 
-    const jwtData: JwtTokenRequest = {
+    const formData: TokenFormFields = {
       name: data.name,
       authType: data.authType || 'bearer',
       description: data.description || '',
       endpoint: data.endpoint,
       method: data.method,
-      request: JSON.parse(data.request),
-      expectedResponse: JSON.parse(data.expectedResponse) || {},
+      request: data.request ? JSON.parse(data.request) : undefined,
+      expectedResponse: data.expectedResponse ? JSON.parse(data.expectedResponse) : undefined,
       key: data.key,
       restrictions: data.restrictions || [],
       logResponse: data.logResponse || false,
@@ -160,7 +171,7 @@ export default function JwtForm() {
     //send data to api (/api/v1/jwt/create)
     const response = await fetch('/api/v1/jwt/create', {
       method: 'POST',
-      body: JSON.stringify(jwtData),
+      body: JSON.stringify(formData),
     });
 
     const responseData = await response.json();
@@ -169,9 +180,61 @@ export default function JwtForm() {
 
   };
   
+
+  const onTest = async (data: FieldValues) => {
+    console.log("TESTING JWT", data);
+    try {
+      setIsLoading(true);
+      setIsTesting(true);
+      setTestResult(null);
+      setTestError(null);
+      const response = await fetch("/api/v1/jwt/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      setTestResult(result.response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsTesting(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleClearForm = () => {
+    form.reset();
+  };
+
+  const handleFillForm = (details: Partial<TokenFormFields>) => {
+    form.reset();
+    if(details.name) form.setValue("name", details.name);
+    if(details.description) form.setValue("description", details.description);
+    if(details.endpoint) form.setValue("endpoint", details.endpoint);
+    if(details.request) form.setValue("request", JSON.stringify(details.request, null, 2));
+    if(details.expectedResponse) form.setValue("expectedResponse", JSON.stringify(details.expectedResponse, null, 2));
+    if(details.method) form.setValue("method", details.method);
+    if(details.logEnabled) form.setValue("logEnabled", details.logEnabled);
+    if(details.logResponse) form.setValue("logResponse", details.logResponse);
+    if(details.key) form.setValue("key", details.key);
+    // @ts-ignore
+    if(details.restrictions) form.setValue("restrictions", details.restrictions); 
+    if(details.authType) form.setValue("authType", details.authType);
+    if(details.aiEnabled) form.setValue("aiEnabled", details.aiEnabled);
+    if(details.openAIKey) form.setValue("openAIKey", details.openAIKey);
+  };
+
   return (
+    <div>
     <Card className="mx-auto max-w-3xl mb-20 p-3">
       <h1 className='text-center text-xl'>Create a New Request Token</h1>
+      <div className="flex gap-4">
+        <Button onClick={handleClearForm}>Clear Form</Button>
+        <Button onClick={() => handleFillForm(pokeApiExampleSnorlaxNameOnly)}>PokeAPI Example</Button>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
@@ -226,7 +289,7 @@ export default function JwtForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Auth Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select a method" />
@@ -335,7 +398,7 @@ export default function JwtForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Method</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select a method" />
@@ -405,9 +468,12 @@ export default function JwtForm() {
           {/* Other sections will go here */}
           <div className="flex justify-center">
             <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
+            <TestSheet form={form} onTest={onTest} isTesting={isTesting}/>
           </div>
         </form>
       </Form>
     </Card>
+
+    </div>
   );  
 }

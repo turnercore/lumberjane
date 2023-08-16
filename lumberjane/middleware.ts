@@ -3,17 +3,20 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // define routes that require authentication
-const protectedClientRoutes = ['/dashboard', '/account'];
-const protectedApiRoutes = ['/api/v1/auth', '/api/v1/crypto', '/api/v1/keys'];
+const protectedClientRoutes = ['/dashboard', '/account', '/keys', '/tokens'];
+const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles', '/api/v1/jwt'];
 
 // !!!!!!MAKE SURE TO UPDATE THE MATCHER AS WELL IF YOU CHANGE/ADD ROUTES!!!!!!!!
 export const config = {
     matcher: [
         '/dashboard/:path*',
         '/account/:path*',
+        '/keys/:path*',
+        '/tokens/:path*',
         '/api/v1/auth/:path*',
-        '/api/v1/crypto/:path*',
         '/api/v1/keys/:path*',
+        '/api/v1/profiles/:path*',
+        '/api/v1/jwt/:path*'
     ],
 };
 

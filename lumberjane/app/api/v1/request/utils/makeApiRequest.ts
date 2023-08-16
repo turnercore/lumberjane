@@ -10,7 +10,7 @@ export default async function makeApiRequest(method: RequestMethod, endpoint: st
     const requestOptions: RequestInit = {
       method,
       headers: headers ? new Headers(headers) : undefined,
-      body: body ? JSON.stringify(body) : undefined,
+      body: body && method == 'POST' ? JSON.stringify(body) : undefined,
     };
 
     // Make the fetch request to the specified endpoint with the prepared options

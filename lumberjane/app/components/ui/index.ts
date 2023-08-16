@@ -96,6 +96,14 @@ import { Calendar } from './calendar';
 import { Checkbox, CheckboxWithDay } from './checkbox';
 import { Textarea } from './textarea';
 import {Switch} from './switch';
+import { Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription, } from './sheet';
 
 
 export {
@@ -192,4 +200,12 @@ export {
   Checkbox,
   CheckboxWithDay,
   Textarea,
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
 };

@@ -1,8 +1,8 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import createJwtToken from '../utils/createJwtToken';
 import type { TokenFormFields } from '@/types';
+import createJwtToken from '../utils/createJwtToken'
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,27 +18,23 @@ export async function POST(req: NextRequest) {
   
     const user = sessionData.session.user;
 
-    const {tokenData, token} = await createJwtToken(user, requestBody);
-  
-    // Insert the token into the database
-    const { data, error } = await supabase
-      .from('tokens')
-      .insert([{
-        id: tokenData.info.id,
-        name: tokenData.info.name,
-        description: tokenData.info.description,
-        user_id: user.id,
-        token,
-        status: 'active',
-        expiration: requestBody.restrictions?.find((r: any) => r.type === 'expirationDate')?.rule.date || undefined,
-      }]);
-  
-    if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
-  
-    // Return success state to the requester
-    return NextResponse.json({ success: true, token }, { status: 201 });
+    const { tokenData, token } = await createJwtToken(user, requestBody);
+
+    // Send the request to the /api/v1/request endpoint
+    const response = await fetch(`/api/v1/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Lumberjane-Test': 'true'
+     },
+      body: JSON.stringify(tokenData.request),
+    });
+
+    // Get the response body
+    const responseBody = await response.json();
+
+    // Return the response body to the requester
+    return NextResponse.json(responseBody, { status: response.status });
   } catch(err) {
     return NextResponse.json({ success: false, error: err }, { status: 500 });
   }
