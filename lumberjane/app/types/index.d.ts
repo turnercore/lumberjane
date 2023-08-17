@@ -137,3 +137,12 @@ export interface TokenFormFields {
   auth?: Array<{ key: string; value: string }>;
   logLevel?: string;
 };
+
+export interface Profile {
+  id: UUID;
+  username: string;
+  full_name: string;
+  avatar_url: string;
+  website: string;
+  user_id: UUID;
+}

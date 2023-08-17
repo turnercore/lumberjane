@@ -1,24 +1,21 @@
+"use client";
 import Logo from "../client/Logo";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import Link from "next/link";
 import UserAvatar from "./UserAvatar";
 
-export default async function Header() {
-  const supabase = createServerComponentClient({ cookies });
-  const { data } = await supabase.auth.getSession();
-  const user = data?.session?.user || null;
+type HeaderProps = {
+  isDark: boolean;
+};
 
+
+export default function Header( {isDark}: HeaderProps) {
   return (
-    <div className="flex justify-between items-center p-4">
+    <header className="bg-gray-100 top-0 w-full h-[62px] flex justify-between items-center p-4">
       <div>
         <Logo />
       </div>
-      <div className="flex">
-        <Link href={user ? "/account" : "/login"}>
+      <div className='flex mt-1 '>
           <UserAvatar />
-        </Link>
-      </div>
-    </div>
-  );
+      </div>  
+    </header>
+  )
 }

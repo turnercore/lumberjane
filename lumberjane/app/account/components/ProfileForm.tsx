@@ -54,7 +54,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
     </CardHeader>
     <CardContent>
       <form onSubmit={handleSubmit} id="profileForm">
-        <Avatar className='floating-element w-64 h-64 mx-auto'>
+        <Avatar className='always-floating-element w-64 h-64 mx-auto'>
           <AvatarImage className="object-cover object-center" src={formProfile.avatar_url?.toString()} />
           <AvatarFallback>{profile.username ? profile.username?.charAt(0) : '🪵'}</AvatarFallback>
         </Avatar>

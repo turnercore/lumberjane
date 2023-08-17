@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Header from './components/server/Header';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from '@/components/client/Toast';
+import Footer from './components/server/Footer';
 
 
 // const inter = Inter({ subsets: ['latin'] })
@@ -18,12 +19,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
+  const isDark = false;
+
   return (
     <html lang="en">
-        <body>
-          <Toast isDark='false' />
-          <Header />
-          {children}
+        <body className="flex flex-col min-h-screen">
+          <Toast isDark={isDark} />
+          <Header isDark={isDark}/>
+          <div className="flex-1 mt-3">{children}</div>
+          <Footer />
         </body>
     </html>
     )

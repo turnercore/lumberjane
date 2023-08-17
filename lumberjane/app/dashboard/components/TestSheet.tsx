@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   Input,
+  ScrollBar,
 } from '@/components/ui';
 import { Button, ScrollArea, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
@@ -110,6 +111,7 @@ export default function TestSheet({ form, onTest, isTesting, testResult, testVar
                 ) : (
                   <ScrollArea className="h-72 w-full rounded-md border">
                     <pre>{testResult}</pre>
+                    <ScrollBar orientation='horizontal' className='w-full' />
                   </ScrollArea>
                 )}
               </AccordionContent>

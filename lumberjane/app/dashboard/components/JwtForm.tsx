@@ -32,7 +32,7 @@ import KeysDropdown from "./KeysDropdown";
 import { useRouter } from "next/navigation";
 import RestrictionsDropdown from "./RestrictionsDropdown";
 import TestSheet from "./TestSheet";
-import tokenExamples from "./examples/tokenExamples";
+import  { TestCasesCombobox } from "./TestCasesCombobox";
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import convertToJSON from "@/utils/convertToJSON";
 
@@ -249,8 +249,8 @@ export default function JwtForm() {
     if(details.name) form.setValue("name", details.name);
     if(details.description) form.setValue("description", details.description);
     if(details.endpoint) form.setValue("endpoint", details.endpoint);
-    if(details.request) form.setValue("request", JSON.stringify(details.request, null, 2));
-    if(details.expectedResponse) form.setValue("expectedResponse", JSON.stringify(details.expectedResponse, null, 2));
+    if(details.request) form.setValue("request", JSON.stringify(JSON.parse(details.request), null, 2));
+    if(details.expectedResponse) form.setValue("expectedResponse", JSON.stringify(JSON.parse(details.expectedResponse), null, 2));
     if(details.method) form.setValue("method", details.method);
     if(details.logEnabled) form.setValue("logEnabled", details.logEnabled);
     if(details.logResponse) form.setValue("logResponse", details.logResponse);
@@ -266,9 +266,8 @@ export default function JwtForm() {
     <div>
     <Card className="mx-auto max-w-3xl mb-20 p-3">
       <h1 className='text-center text-xl'>Create a New Request Token</h1>
-      <div className="flex gap-4">
-        <Button onClick={handleClearForm}>Clear Form</Button>
-        <Button onClick={() => handleFillForm(pokeApiExampleSnorlaxNameOnly)}>PokeAPI Example</Button>
+      <div className="flex gap-4 justify-end">
+        <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
