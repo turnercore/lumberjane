@@ -28,10 +28,11 @@ import type { TokenFormFields } from "@/types"
 import KeysDropdown from "./KeysDropdown";
 import { useRouter } from "next/navigation";
 import RestrictionsDropdown from "./RestrictionsDropdown";
-import { set } from "date-fns";
 import TestSheet from "./TestSheet";
 import { pokeApiExampleSnorlax, pokeApiExampleSnorlaxNameOnly } from "./examples/tokenExamples";
-import { fromTheme } from "tailwind-merge";
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import convertToJSON from "@/utils/convertToJSON";
+
 
 const expectedResponseExplainer: string = `
 (Optional) Expected response from the endpoint. 
@@ -43,10 +44,11 @@ If the fields cannot be found the server will return an error and no data.
 `;
 
 const isValidJSON = (value: string) => {
-  if(value == '') return true;
+  if(value == '' || value === "{}") return true;
   else {
     try {
-      JSON.parse(value);
+      const convertedValue = convertToJSON(value);
+      JSON.parse(convertedValue);
       return true;
     } catch (e) {
       return false;
@@ -60,12 +62,10 @@ const jwtSchema = z.object({
   }).default(''),
   description: z.string().default('').optional(),
   endpoint: z.string().url({
-    message: ")Endpoint must be a valid URL.",
+    message: "Endpoint must be a valid URL.",
   }),
   request: z.string().default('').optional(),
-  expectedResponse: z.string().refine(isValidJSON, {
-    message: "Expected Response must be a valid JSON object.",
-  }).default('').optional(),
+  expectedResponse: z.string().default('').optional(),
   method: z.enum(["POST", "GET", "DELETE", "PUT", "PATCH"]).default("POST"),
   logEnabled: z.boolean().default(false),
   logResponse: z.boolean().default(false),
@@ -89,6 +89,13 @@ const jwtSchema = z.object({
       code: z.ZodIssueCode.custom,
     });
   }
+  if (obj.expectedResponse && !isValidJSON(obj.expectedResponse)) {
+    ctx.addIssue({
+      path: ['expectedResponse'],
+      message: "Expected Response must be a valid JSON object.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
 });
 
 
@@ -98,6 +105,26 @@ export default function JwtForm() {
   const [testResult, setTestResult] = useState<string | null>(null);
   const [testError, setTestError] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState<boolean>(false);
+
+  const setTokenFormFields = (data: FieldValues): TokenFormFields => {
+    const jsonRequest = convertToJSON(data.request);
+    console.log(jsonRequest);
+    return {
+      name: data.name,
+      authType: data.authType || 'bearer',
+      description: data.description || '',
+      endpoint: data.endpoint,
+      method: data.method,
+      request: data.request ? JSON.parse(jsonRequest) : undefined,
+      expectedResponse: data.expectedResponse ? JSON.parse(convertToJSON(data.expectedResponse)) : undefined,
+      key: data.key,
+      restrictions: data.restrictions || [],
+      logResponse: data.logResponse || false,
+      logEnabled: data.logEnabled || false,
+      aiEnabled: data.aiEnabled || false,
+      openAIKey: data.openAIKey || '',
+    };
+  };
 
   const addNewKey = () => {
     console.log("Adding new key!");
@@ -150,21 +177,7 @@ export default function JwtForm() {
       return;
     }
 
-    const formData: TokenFormFields = {
-      name: data.name,
-      authType: data.authType || 'bearer',
-      description: data.description || '',
-      endpoint: data.endpoint,
-      method: data.method,
-      request: data.request ? JSON.parse(data.request) : undefined,
-      expectedResponse: data.expectedResponse ? JSON.parse(data.expectedResponse) : undefined,
-      key: data.key,
-      restrictions: data.restrictions || [],
-      logResponse: data.logResponse || false,
-      logEnabled: data.logEnabled || false,
-      aiEnabled: data.aiEnabled || false,
-      openAIKey: data.openAIKey || '',
-    };
+    const formData: TokenFormFields = setTokenFormFields(data);
   
     // Continue processing the valid data
     // Handle submission logic here
@@ -180,9 +193,8 @@ export default function JwtForm() {
 
   };
   
-
   const onTest = async (data: FieldValues) => {
-    console.log("TESTING JWT", data);
+    const formData: TokenFormFields = setTokenFormFields(data);
     try {
       setIsLoading(true);
       setIsTesting(true);
@@ -193,10 +205,11 @@ export default function JwtForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
       });
       const result = await response.json();
-      setTestResult(result.response);
+      console.log(result);
+      setTestResult(JSON.stringify(result, null, 2));
     } catch (error) {
       console.error(error);
     } finally {
@@ -428,7 +441,19 @@ export default function JwtForm() {
               <FormItem>
                 <FormLabel>Request</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='{"key": "value"}' {...field} />
+                <CodeEditor
+                    value={field.value}
+                    language="json"
+                    onChange={field.onChange}
+                    placeholder="Enter your JSON body for POST requests."
+                    padding={15}
+                    className="rounded-md"
+                    style={{
+                      fontSize: 14,
+                      backgroundColor: "#f5f5f5",
+                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                    }}
+                  />
                 </FormControl>
                 <FormDescription>Request to send to the endpoint.</FormDescription>
                 <FormMessage />
@@ -443,7 +468,19 @@ export default function JwtForm() {
               <FormItem>
                 <FormLabel>Expected Response</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='{"key": "value"}' {...field} />
+                <CodeEditor
+                    value={field.value}
+                    language="json"
+                    onChange={field.onChange}
+                    placeholder="Ender JSON with 'include' on fields you want included."
+                    padding={15}
+                    className="rounded-md"
+                    style={{
+                      fontSize: 14,
+                      backgroundColor: "#f5f5f5",
+                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                    }}
+                  />
                 </FormControl>
                 <FormDescription>{expectedResponseExplainer}</FormDescription>
                 <FormMessage />
@@ -468,7 +505,7 @@ export default function JwtForm() {
           {/* Other sections will go here */}
           <div className="flex justify-center">
             <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
-            <TestSheet form={form} onTest={onTest} isTesting={isTesting}/>
+            <TestSheet form={form} onTest={onTest} isTesting={isTesting} testResult={testResult}/>
           </div>
         </form>
       </Form>

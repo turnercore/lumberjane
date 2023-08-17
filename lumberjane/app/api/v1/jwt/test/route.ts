@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   
     if (sessionError || !sessionData || !sessionData.session) {
+      console.log('Error: No user session detected.');
       return NextResponse.json({ success: false, error: sessionError ? sessionError.message : 'No user session detected.' }, { status: 401 });
     }
   
@@ -21,21 +22,25 @@ export async function POST(req: NextRequest) {
     const { tokenData, token } = await createJwtToken(user, requestBody);
 
     // Send the request to the /api/v1/request endpoint
-    const response = await fetch(`/api/v1/request`, {
+    const response = await fetch(`http://localhost:3000/api/v1/request`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Lumberjane-Test': 'true'
      },
-      body: JSON.stringify(tokenData.request),
+      body: JSON.stringify({"lumberjane_token": token}),
     });
 
     // Get the response body
     const responseBody = await response.json();
 
+    // Log the response body
+    console.log('Response body:', responseBody);
+
     // Return the response body to the requester
     return NextResponse.json(responseBody, { status: response.status });
   } catch(err) {
+    console.log('Error:', err);
     return NextResponse.json({ success: false, error: err }, { status: 500 });
   }
 }

@@ -104,6 +104,7 @@ import { Sheet,
   SheetFooter,
   SheetTitle,
   SheetDescription, } from './sheet';
+import { ScrollArea, ScrollBar } from './scroll-area';
 
 
 export {
@@ -208,4 +209,6 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  ScrollArea,
+  ScrollBar,
 };

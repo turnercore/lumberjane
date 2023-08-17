@@ -10,9 +10,12 @@ export async function POST(req: NextRequest) {
     if (!ip && forwardedFor) {
       ip = forwardedFor.split(',').at(0) ?? 'Unknown';
     }
-    const isLocalRequest = ip === '127.0.0.1' || ip === '::1';
+    const isLocalRequest = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:' || ip === '0:0:0:0:0:0:0:1' || ip === '::ffff:127.0.0.1';
     const isTest = req.headers.get('X-Lumberjane-Test') === 'true' && isLocalRequest;
 
+    console.log('Recived request from IP:', ip);
+    console.log('islocal request:', isLocalRequest);
+    console.log('isTest:', isTest);
 
     // Validate the token
 
