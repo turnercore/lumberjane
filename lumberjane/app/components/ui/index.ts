@@ -105,6 +105,8 @@ import { Sheet,
   SheetTitle,
   SheetDescription, } from './sheet';
 import { ScrollArea, ScrollBar } from './scroll-area';
+import { RadioGroup, RadioGroupItem } from './radio-group';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
 
 
 export {
@@ -211,4 +213,10 @@ export {
   SheetDescription,
   ScrollArea,
   ScrollBar,
+  RadioGroup, 
+  RadioGroupItem,
+  Accordion, 
+  AccordionItem, 
+  AccordionTrigger, 
+  AccordionContent,
 };

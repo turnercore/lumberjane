@@ -4,6 +4,7 @@ import { makeApiRequest, prepareRequest, validateToken, processResponse } from '
 export async function POST(req: NextRequest) {
   try {
     const requestBody = JSON.parse(await req.text());
+    console.log(requestBody);
     const token = requestBody.lumberjane_token;
     let ip = req.ip ?? req.headers.get('x-real-ip');
     const forwardedFor = req.headers.get('x-forwarded-for');
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     // Make the API request
     const { data: responseData, error: apiError } = await makeApiRequest(
       decodedToken.info.method || 'POST', 
-      decodedToken.info.endpoint, 
+      preparedRequest.endpoint, 
       preparedRequest.headers, 
       preparedRequest.body);
     if (apiError ) {

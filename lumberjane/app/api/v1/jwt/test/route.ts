@@ -4,10 +4,21 @@ import { cookies } from 'next/headers';
 import type { TokenFormFields } from '@/types';
 import createJwtToken from '../utils/createJwtToken'
 
+interface TestFormFields extends TokenFormFields {
+  additionalVariables: any;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
-    const requestBody: TokenFormFields = JSON.parse(await req.text());
+    let requestBody: TestFormFields = JSON.parse(await req.text());
+    console.log(requestBody);
+    let additionalVariables = requestBody.additionalVariables || {};
+    console.log(additionalVariables);
+  
+    if (requestBody.additionalVariables) {
+      delete requestBody.additionalVariables;
+    }
 
     //Get the supabase user session
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -21,6 +32,14 @@ export async function POST(req: NextRequest) {
 
     const { tokenData, token } = await createJwtToken(user, requestBody);
 
+    const payload: Record<string, any> = { 
+      "lumberjane_token": token,
+    }
+    for(const [key, value] of Object.entries(additionalVariables)) {
+      payload[key] = value;
+    }
+    console.log('payload:', payload);
+
     // Send the request to the /api/v1/request endpoint
     const response = await fetch(`http://localhost:3000/api/v1/request`, {
       method: 'POST',
@@ -28,7 +47,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
         'X-Lumberjane-Test': 'true'
      },
-      body: JSON.stringify({"lumberjane_token": token}),
+      body: JSON.stringify(payload),
     });
 
     // Get the response body

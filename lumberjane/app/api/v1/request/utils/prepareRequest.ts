@@ -6,13 +6,26 @@ type PreparedRequest = {
   headers: { [key: string]: string };
   body: Object;
   method: string;
+  endpoint: string;
 };
 
 export default async function prepareRequest(decodedToken: JwtToken, requestBody: any): Promise<StandardResponse> {
   const error: ServerError = { message: '', status: 500 };
-
+  console.log(requestBody); 
   // Replace any variables in the request with the values provided in the request
+  // Add error handling, if there is a variable but it's not included in the request, throw an error
   const replacedRequest = JSON.stringify(requestBody).replace(/\$\$(.*?)\$\$/g, (match, variable) => {
+    console.log('replacing variable:', variable);
+    console.log('with value:', requestBody[variable]);
+    return requestBody[variable] || '';
+  });
+
+  // Replace any variables in the endpoint with the values provided in the request
+  // Add error handling, if there is a variable but it's not included in the request, throw an error
+  const endpoint = decodedToken.info.endpoint.replace(/\$\$(.*?)\$\$/g, (match, variable) => {
+    console.log('replacing variable:', variable);
+    console.log('with value:', requestBody[variable]);
+    console.log('new endpoint is :' + requestBody[variable]);
     return requestBody[variable] || '';
   });
 
@@ -60,6 +73,7 @@ export default async function prepareRequest(decodedToken: JwtToken, requestBody
     headers: headers,
     body: JSON.parse(replacedRequest),
     method: requestMethod,
+    endpoint,
   };
 
   return { data: preparedRequest, error: undefined };

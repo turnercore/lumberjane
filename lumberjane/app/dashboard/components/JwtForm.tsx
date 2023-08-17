@@ -20,7 +20,10 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,  
+  SelectValue,
+  RadioGroup,
+  Label,
+  RadioGroupItem,  
 } from "@/components/ui";
 import { FieldValues, useForm } from "react-hook-form";
 import { useState } from "react";
@@ -29,7 +32,7 @@ import KeysDropdown from "./KeysDropdown";
 import { useRouter } from "next/navigation";
 import RestrictionsDropdown from "./RestrictionsDropdown";
 import TestSheet from "./TestSheet";
-import { pokeApiExampleSnorlax, pokeApiExampleSnorlaxNameOnly } from "./examples/tokenExamples";
+import tokenExamples from "./examples/tokenExamples";
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import convertToJSON from "@/utils/convertToJSON";
 
@@ -98,6 +101,7 @@ const jwtSchema = z.object({
   }
 });
 
+export type TestVariable = Record<string, string>;
 
 export default function JwtForm() {
   const router = useRouter();
@@ -105,6 +109,7 @@ export default function JwtForm() {
   const [testResult, setTestResult] = useState<string | null>(null);
   const [testError, setTestError] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState<boolean>(false);
+  const [testVariables, setTestVariables] = useState<TestVariable[]>([]);
 
   const setTokenFormFields = (data: FieldValues): TokenFormFields => {
     const jsonRequest = convertToJSON(data.request);
@@ -200,12 +205,29 @@ export default function JwtForm() {
       setIsTesting(true);
       setTestResult(null);
       setTestError(null);
+      const body:Record<string, any> = {};
+      //add formData to body
+      for (const [key, value] of Object.entries(formData)) {
+        body[key] = value;
+      }
+      //add testVariables to body
+      body['additionalVariables'] = {};
+      for (const variable of testVariables) {
+        //if the body already has the key, just skip it
+        if (body['additionalVariables'][Object.keys(variable)[0]] || Object.keys(variable)[0] == '') continue;
+
+        //Otherwise add the key and value to the body
+        body['additionalVariables'][Object.keys(variable)[0]] = Object.values(variable)[0];
+
+        body[Object.keys(variable)[0]] = Object.values(variable)[0];
+      }
+
       const response = await fetch("/api/v1/jwt/test", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
       const result = await response.json();
       console.log(result);
@@ -283,44 +305,23 @@ export default function JwtForm() {
 
           <FormField
             control={form.control}
-            name="endpoint"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endpoint</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://api.example.com" {...field} />
-                </FormControl>
-                <FormDescription>Endpoint to use for the request, include the full url.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> 
-
-          <FormField
-            control={form.control}
             name="authType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Auth Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select a method" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>API Authentication Type</SelectLabel>
-                      <SelectItem value="bearer">Bearer-Token</SelectItem>
-                      <SelectItem value="none">None</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                  </Select>
-                  <FormDescription>Auth Type to use for the request.</FormDescription>
-                  <FormMessage />
+                <RadioGroup defaultValue={field.value} value={field.value} onValueChange={field.onChange} className="flex space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="bearer" id="r1" />
+                    <Label htmlFor="r1">Bearer-Token</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="none" id="r2" />
+                    <Label htmlFor="r2">None</Label>
+                  </div>
+                </RadioGroup>
               </FormItem>
             )}
-          />  
+          />
 
           {form.watch("authType") === "bearer" && (
           <FormField
@@ -340,6 +341,109 @@ export default function JwtForm() {
         )}
 
           <FormField
+            control={form.control}
+            name="method"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Method</FormLabel>
+                <RadioGroup defaultValue={field.value} value={field.value} onValueChange={field.onChange} className="flex space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="POST" id="r1" />
+                    <Label htmlFor="r1">POST</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="GET" id="r2" />
+                    <Label htmlFor="r2">GET</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="DELETE" id="r3" />
+                    <Label htmlFor="r3">DELETE</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="PUT" id="r4" />
+                    <Label htmlFor="r4">PUT</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="PATCH" id="r5" />
+                    <Label htmlFor="r5">PATCH</Label>
+                  </div>
+                </RadioGroup>
+                <FormDescription>Method to use for the request.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="endpoint"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Endpoint</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://api.example.com" {...field} />
+                </FormControl>
+                <FormDescription>Where to send the request, can include variables. Ex: https://pokeapi.co/api/v2/pokemon/$$name$$</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> 
+
+          <FormField
+            control={form.control}
+            name="request"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Request</FormLabel>
+                <FormControl>
+                <CodeEditor
+                    value={field.value}
+                    language="json"
+                    onChange={field.onChange}
+                    placeholder="Enter your JSON body for POST requests."
+                    padding={15}
+                    className="rounded-md"
+                    style={{
+                      fontSize: 14,
+                      backgroundColor: "#f5f5f5",
+                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                    }}
+                  />
+                </FormControl>
+                <FormDescription>Request to send to the endpoint.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="expectedResponse"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Expected Response</FormLabel>
+                <FormControl>
+                <CodeEditor
+                    value={field.value}
+                    language="json"
+                    onChange={field.onChange}
+                    placeholder="Ender JSON with 'include' on fields you want included."
+                    padding={15}
+                    className="rounded-md"
+                    style={{
+                      fontSize: 14,
+                      backgroundColor: "#f5f5f5",
+                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                    }}
+                  />
+                </FormControl>
+                <FormDescription>{expectedResponseExplainer}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+<FormField
             control={form.control}
             name="logEnabled"
             render={({ field }) => (
@@ -407,89 +511,6 @@ export default function JwtForm() {
 
           <FormField
             control={form.control}
-            name="method"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Method</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select a method" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Methods</SelectLabel>
-                      <SelectItem value="POST">POST</SelectItem>
-                      <SelectItem value="GET">GET</SelectItem>
-                      <SelectItem value="DELETE">DELETE</SelectItem>
-                      <SelectItem value="PUT">PUT</SelectItem>
-                      <SelectItem value="PATCH">PATCH</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                  </Select>
-                  <FormDescription>Method to use for the request.</FormDescription>
-                  <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="request"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Request</FormLabel>
-                <FormControl>
-                <CodeEditor
-                    value={field.value}
-                    language="json"
-                    onChange={field.onChange}
-                    placeholder="Enter your JSON body for POST requests."
-                    padding={15}
-                    className="rounded-md"
-                    style={{
-                      fontSize: 14,
-                      backgroundColor: "#f5f5f5",
-                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                    }}
-                  />
-                </FormControl>
-                <FormDescription>Request to send to the endpoint.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="expectedResponse"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Expected Response</FormLabel>
-                <FormControl>
-                <CodeEditor
-                    value={field.value}
-                    language="json"
-                    onChange={field.onChange}
-                    placeholder="Ender JSON with 'include' on fields you want included."
-                    padding={15}
-                    className="rounded-md"
-                    style={{
-                      fontSize: 14,
-                      backgroundColor: "#f5f5f5",
-                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                    }}
-                  />
-                </FormControl>
-                <FormDescription>{expectedResponseExplainer}</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="restrictions"
             render={({ field }) => (
               <FormItem>
@@ -505,7 +526,7 @@ export default function JwtForm() {
           {/* Other sections will go here */}
           <div className="flex justify-center">
             <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
-            <TestSheet form={form} onTest={onTest} isTesting={isTesting} testResult={testResult}/>
+            <TestSheet form={form} onTest={onTest} isTesting={isTesting} testResult={testResult} testVariables={testVariables} setTestVariables={setTestVariables}/>
           </div>
         </form>
       </Form>
