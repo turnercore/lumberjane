@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import SignOutButton from '@/components/client/SignOutButton';
-import LoginMagicLinkForm from '@/components/client/LoginMagicLinkForm';
+import LoginMagicLinkForm from '@/components/client/LoginForm';
 
 export default async function LoginPage() {
   const supabase = createServerComponentClient({ cookies });

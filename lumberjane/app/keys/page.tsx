@@ -49,7 +49,7 @@ const KeysDashboard: NextPage = async () => {
     }
 
     return (
-        <Card className='mx-auto max-w-2xl p-3'>
+        <Card className='mx-auto max-w-2xl p-3 shadow-md'>
             <h1 className='text-center text-lg'>API Keys</h1>
             <KeyList keys={keys} />
         </Card>

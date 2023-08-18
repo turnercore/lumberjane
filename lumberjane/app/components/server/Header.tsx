@@ -1,6 +1,6 @@
-"use client";
-import Logo from "../client/Logo";
-import UserAvatar from "./UserAvatar";
+import Logo from "./Logo";
+import UserAvatar from "../client/UserAvatar";
+import NavBar from "./NavBar";
 
 type HeaderProps = {
   isDark: boolean;
@@ -9,10 +9,11 @@ type HeaderProps = {
 
 export default function Header( {isDark}: HeaderProps) {
   return (
-    <header className="bg-gray-100 top-0 w-full h-[62px] flex justify-between items-center p-4">
-      <div>
+    <header className="bg-gray-500 bg-opacity-10 top-0 w-full h-[62px] flex justify-between items-center p-4">
+      {/* <div>
         <Logo />
-      </div>
+      </div> */}
+      <NavBar />
       <div className='flex mt-1 '>
           <UserAvatar />
       </div>  

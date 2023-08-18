@@ -27,6 +27,7 @@ export default function RootLayout({
           <Toast isDark={isDark} />
           <Header isDark={isDark}/>
           <div className="flex-1 mt-3">{children}</div>
+          <div className="background"></div>
           <Footer />
         </body>
     </html>

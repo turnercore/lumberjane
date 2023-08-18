@@ -10,7 +10,7 @@ import {
 } from "@/components/ui";
 import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-import SignOutButton from "../client/SignOutButton";
+import SignOutButton from "./SignOutButton";
 import { useEffect, useState } from "react";
 import { Profile } from "@/types";
 

@@ -107,6 +107,7 @@ import { Sheet,
 import { ScrollArea, ScrollBar } from './scroll-area';
 import { RadioGroup, RadioGroupItem } from './radio-group';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 
 
 export {
@@ -219,4 +220,8 @@ export {
   AccordionItem, 
   AccordionTrigger, 
   AccordionContent,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
 };

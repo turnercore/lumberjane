@@ -47,7 +47,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
 
   return (
 
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto max-w-sm shadow-md">
     <CardHeader className="justify-center text-center">
       <CardTitle>Lumberjane Profile</CardTitle>
       <CardDescription>Update your profile</CardDescription>

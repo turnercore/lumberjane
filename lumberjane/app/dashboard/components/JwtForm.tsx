@@ -264,7 +264,7 @@ export default function JwtForm() {
 
   return (
     <div>
-    <Card className="mx-auto max-w-3xl mb-20 p-3">
+    <Card className="mx-auto max-w-3xl mb-20 p-3 shadow-md">
       <h1 className='text-center text-xl'>Create a New Request Token</h1>
       <div className="flex gap-4 justify-end">
         <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
