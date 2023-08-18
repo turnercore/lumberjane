@@ -36,6 +36,7 @@ export default async function NavBar() {
           </Link>
         </NavigationMenuItem>
 
+        {process.env.DISABLE_ABOUT !== "true" && (
         <NavigationMenuItem>
           <Link href="/about" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle}>
@@ -43,6 +44,7 @@ export default async function NavBar() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
+        )}
 
         <NavigationMenuItem>
           <Link href="/docs" legacyBehavior passHref>

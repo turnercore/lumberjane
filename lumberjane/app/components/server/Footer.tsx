@@ -9,12 +9,16 @@ const Footer = () => {
   return (
       <footer className="bg-gray-800 py-4 bottom-0 w-full">
         <div className="container mx-auto px-4 flex flex-col justify-center items-center text-sm">
-        <div className="text-gray-500 text-center mb-2">
-          <p>{copywrite}</p>
-        </div>
-        <div className="text-gray-500 text-center mb-2">
-          <p>Made with {randomEmoji}</p>
-        </div>
+        {process.env.DISABLE_ABOUT !== "true" && (
+          <div>
+            <div className="text-gray-500 text-center mb-2">
+              <p>{copywrite}</p>
+            </div>
+            <div className="text-gray-500 text-center mb-2">
+              <p>Made with {randomEmoji} by Turner Monroe</p>
+            </div>
+          </div>
+        )}
         <div className="flex justify-center items-center vibrating-element">
           <Link href="https://github.com/turnercore/lumberjane">
             <img src="/img/github-mark/github-mark-white.svg" alt="GitHub" className="h-6 w-6 ml-2" />

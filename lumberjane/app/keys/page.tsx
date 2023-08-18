@@ -4,7 +4,7 @@ import KeyList from './components/KeyList';
 import { Key } from '@/types';
 import { cookies } from 'next/headers';
 import { decrypt } from '@/utils/crypto';
-import { Card } from '@/components/ui';
+import { Card, CardContent, CardTitle } from '@/components/ui';
 
 const KeysDashboard: NextPage = async () => {
     const supabase = createServerComponentClient({ cookies });
@@ -50,8 +50,10 @@ const KeysDashboard: NextPage = async () => {
 
     return (
         <Card className='mx-auto max-w-2xl p-3 shadow-md'>
-            <h1 className='text-center text-lg'>API Keys</h1>
-            <KeyList keys={keys} />
+            <CardTitle className='text-center text-lg'>API Keys</CardTitle>
+            <CardContent>
+                <KeyList keys={keys} />
+            </CardContent>
         </Card>
       );
     };
