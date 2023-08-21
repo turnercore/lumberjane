@@ -6,6 +6,8 @@ import type { User } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
 import type { UserProfile } from '@/types';
 
+//TODO: This should be refactored into a form and validated with zod. See the dashboard for an example
+
 // Fields that we don't want the user to be able to update directly should go here
 const omitFields = ['id', 'updated_at', 'avatar_url', 'user_id'];
 
@@ -105,9 +107,9 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
           </div>
           <div>
             <Label htmlFor='password' className='justify-evenly' >New Password</Label>
-            <Input type='password' id='password' value={password} placeholder='********' className="w-full" onBlur={handlePasswordChange}/>
+            <Input type='password' id='password' placeholder='********' className="w-full" onBlur={handlePasswordChange}/>
             <Label htmlFor='confirmPassword' className='justify-evenly'>Confirm Password</Label>
-            <Input type='password' id='confirmPassword' value={confirmPassword} placeholder='********' className="w-full" onBlur={handleConfirmPasswordChange} />
+            <Input type='password' id='confirmPassword' placeholder='********' className="w-full" onBlur={handleConfirmPasswordChange} />
           </div>
       </form>
     </CardContent>

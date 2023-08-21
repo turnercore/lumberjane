@@ -6,10 +6,15 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 export default function SignOutButton() {
   const supabase = createClientComponentClient();
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  }
+
+
   const handleSignOut = () => {
     try {
-        supabase.auth.signOut();
-        window.location.href = '/'
+      signOut();
     } catch (error) {
         console.log(error);
     }

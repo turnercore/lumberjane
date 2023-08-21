@@ -13,6 +13,7 @@ import {
   Button,} from "@/components/ui"
 import { useEffect, useState } from "react";
 import { ChevronsUpDown } from "lucide-react";
+import KeyAddDialog from "@/components/client/KeyAddDialog";
 
 //This component is a shadcn dropdown menu that displays the user's keys. Each key will be displayed by it's name
 //and when hovered will display the description as a tooltip. When clicked the 'selectKey' callback will be execute
@@ -72,6 +73,13 @@ export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownPr
     }
   }
 
+  const handleAddKey = (key: Key) => {
+    if(!key || !key.id) return
+    setPickedKey(key)
+    setOpen(false)
+    onValueChange(key.id)
+  }
+
   //Fetch the user's session and get keys from the database on mount
   useEffect(() => {
     fetchKeys()
@@ -95,6 +103,11 @@ export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownPr
           <CommandInput placeholder="Search key..." />
           <CommandEmpty>No keys found.</CommandEmpty>
           <CommandGroup>
+            <CommandItem onSelect={() => {
+                }}
+                >
+                  <KeyAddDialog onAddKey={handleAddKey}><p> + Add New Key </p></KeyAddDialog>
+            </CommandItem>
             {keys.map((key) => (
               <CommandItem
                 key={key.id}
@@ -108,13 +121,6 @@ export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownPr
                 {key.name}
               </CommandItem>
             ))}
-            <CommandItem onSelect={() => {
-              addNewKey();
-              setOpen(false);
-              setPickedKey(null);
-              onValueChange('');
-            }}
-            >+ Add New Key</CommandItem>
           </CommandGroup>
         </Command>
       </PopoverContent>

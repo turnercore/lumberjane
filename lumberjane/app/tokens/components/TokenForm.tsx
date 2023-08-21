@@ -1,6 +1,7 @@
 'use client';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { FieldValues, useForm } from "react-hook-form";
 import {
   Card,
   Textarea,
@@ -25,7 +26,6 @@ import {
   Label,
   RadioGroupItem,  
 } from "@/components/ui";
-import { FieldValues, useForm } from "react-hook-form";
 import { useState } from "react";
 import type { TokenFormFields } from "@/types"
 import KeysDropdown from "./KeysDropdown";
@@ -59,7 +59,7 @@ const isValidJSON = (value: string) => {
   }
 };
 
-const jwtSchema = z.object({
+const tokenSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }).default(''),
@@ -103,7 +103,7 @@ const jwtSchema = z.object({
 
 export type TestVariable = Record<string, string>;
 
-export default function JwtForm() {
+export default function tokenForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -113,7 +113,6 @@ export default function JwtForm() {
 
   const setTokenFormFields = (data: FieldValues): TokenFormFields => {
     const jsonRequest = convertToJSON(data.request);
-    console.log(jsonRequest);
     return {
       name: data.name,
       authType: data.authType || 'bearer',
@@ -140,7 +139,7 @@ export default function JwtForm() {
 
   const form = useForm({
     mode: "onTouched",
-    resolver: zodResolver(jwtSchema),
+    resolver: zodResolver(tokenSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -172,8 +171,8 @@ export default function JwtForm() {
       return;
     }
   
-    // Validate the rest of the data using jwtSchema
-    const result = jwtSchema.safeParse(data);
+    // Validate the rest of the data using tokenSchema
+    const result = tokenSchema.safeParse(data);
   
     if (!result.success) {
       // Handle other validation errors
@@ -186,8 +185,8 @@ export default function JwtForm() {
   
     // Continue processing the valid data
     // Handle submission logic here
-    //send data to api (/api/v1/jwt/create)
-    const response = await fetch('/api/v1/jwt/create', {
+    //send data to api (/api/v1/tokens/create)
+    const response = await fetch('/api/v1/tokens/create', {
       method: 'POST',
       body: JSON.stringify(formData),
     });
@@ -222,7 +221,7 @@ export default function JwtForm() {
         body[Object.keys(variable)[0]] = Object.values(variable)[0];
       }
 
-      const response = await fetch("/api/v1/jwt/test", {
+      const response = await fetch("/api/v1/tokens/test", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

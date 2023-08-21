@@ -1,4 +1,4 @@
-import { JwtToken, ServerError, StandardResponse } from "@/types";
+import type { Token, ServerError, StandardResponse } from "@/types";
 import { fetchAndDecryptKey } from ".";
 
 
@@ -9,7 +9,7 @@ type PreparedRequest = {
   endpoint: string;
 };
 
-export default async function prepareRequest(decodedToken: JwtToken, requestBody: any): Promise<StandardResponse> {
+export default async function prepareRequest(decodedToken: Token, requestBody: any): Promise<StandardResponse> {
   const error: ServerError = { message: '', status: 500 };
   console.log(requestBody); 
   // Replace any variables in the request with the values provided in the request

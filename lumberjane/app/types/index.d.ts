@@ -15,7 +15,7 @@ export type User = {
 
 type authType = 'none' | 'bearer'
 
-export type JwtToken = {
+export type Token = {
     info: {
         key?: UUID;
         id: UUID;
@@ -66,7 +66,7 @@ export type Key = {
     isSecret?: boolean;
 };
 
-// Restrictions for JWT use
+// Restrictions for Token use
 export type RestrictionType = 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expirationDate';
 
 export interface Restriction {

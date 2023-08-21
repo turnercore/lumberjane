@@ -9,13 +9,18 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });
     const requestBody = JSON.parse(await req.text());
+    if (!requestBody) {
+      return NextResponse.json({ error: 'No request body provided' }, { status: 400 });
+    }
+    const password = requestBody.password; // Assuming the user ID is included in the request
+    delete requestBody.password;
     const updatedProfile: UserProfile = requestBody;
     const userId = updatedProfile.id; // Assuming the user ID is included in the request
-    const password = requestBody.password; // Assuming the user ID is included in the request
 
     let passError;
     if(password) {
       const { data:passData, error: passError} = await supabase.auth.updateUser({ password });
+      console.log('password updated!', passData, passError);
     }
 
     if (!userId) {

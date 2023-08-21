@@ -8,7 +8,7 @@ import { Provider } from '@supabase/supabase-js';
 
 const providersENV = process.env.NEXT_PUBLIC_PROVIDERS || '';
 
-export default function LoginMagicLinkForm() {
+export default function LoginForm() {
     const supabase = createClientComponentClient();
 
     //Split providers by , and add each to the providers list

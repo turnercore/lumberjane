@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
-import type { ExpirationRestriction, JwtToken, ServerError, StandardResponse } from '@/types';
+import type { ExpirationRestriction, Token, ServerError, StandardResponse } from '@/types';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
-const jwtSecret = process.env.LUMBERJANE_MASTER_KEY || '';
+const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function validateToken(token: string, isTest: boolean = false): Promise<StandardResponse> {
@@ -39,20 +39,20 @@ export default async function validateToken(token: string, isTest: boolean = fal
     }
   }
 
-  const data: JwtToken = decodedToken;
+  const data: Token = decodedToken;
   return { data };
 }
 
-function verifyToken(token: string): JwtToken | void {
+function verifyToken(token: string): Token | void {
   try {
-    const decodedToken = jwt.verify(token, jwtSecret) as JwtToken;
+    const decodedToken = jwt.verify(token, tokenSecret) as Token;
     return decodedToken;
   } catch (err) {
     return;
   }
 }
 
-async function checkExpiration(decodedToken: JwtToken): Promise<boolean> {
+async function checkExpiration(decodedToken: Token): Promise<boolean> {
   const expirationRestriction: ExpirationRestriction = decodedToken.restrictions?.find((r: any) => r.type === 'expirationDate') as ExpirationRestriction;
   if (expirationRestriction && new Date(expirationRestriction.rule.date) < new Date()) {
     return true;
@@ -73,7 +73,7 @@ async function checkExpiration(decodedToken: JwtToken): Promise<boolean> {
   return false;
 }
 
-async function checkRevocation(decodedToken: JwtToken): Promise<boolean> {
+async function checkRevocation(decodedToken: Token): Promise<boolean> {
   const { data: tokenData, error: supabaseError } = await supabase
     .from('tokens')
     .select('status')

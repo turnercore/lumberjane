@@ -1,19 +1,19 @@
 import jwt from 'jsonwebtoken';
-import { JwtToken, TokenFormFields } from '@/types';
+import { Token, TokenFormFields } from '@/types';
 import crypto, { UUID } from 'crypto';
 import { User } from '@supabase/auth-helpers-nextjs';
 
-const jwtSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this';
+const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this';
 
 interface TokenResult {
-  tokenData: JwtToken;
+  tokenData: Token;
   token: string;
 }
-export default async function createJwtToken(user: User, requestBody: TokenFormFields): Promise<TokenResult> {
+export default async function createToken(user: User, requestBody: TokenFormFields): Promise<TokenResult> {
   // Create UUID for record
   const id = crypto.randomUUID();
 
-  const tokenData: JwtToken = {
+  const tokenData: Token = {
     info: {
       id,
       formatResponse: requestBody.expectedResponse ? true : false,
@@ -45,7 +45,7 @@ export default async function createJwtToken(user: User, requestBody: TokenFormF
   }
 
   // Create the JWT token
-  const token = jwt.sign(tokenData, jwtSecret);
+  const token = jwt.sign(tokenData, tokenSecret);
 
   return {tokenData, token};
 }

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui';
 import { Button, ScrollArea, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
-import type { TestVariable } from './JwtForm';
+import type { TestVariable } from './TokenForm';
 
 
 interface TestSheetProps {

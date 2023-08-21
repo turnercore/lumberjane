@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 
 // define routes that require authentication
 const protectedClientRoutes = ['/dashboard', '/account', '/keys', '/tokens'];
-const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles', '/api/v1/jwt'];
+const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles', '/api/v1/tokens'];
 
 // !!!!!!MAKE SURE TO UPDATE THE MATCHER AS WELL IF YOU CHANGE/ADD ROUTES!!!!!!!!
 export const config = {
@@ -16,7 +16,7 @@ export const config = {
         '/api/v1/auth/:path*',
         '/api/v1/keys/:path*',
         '/api/v1/profiles/:path*',
-        '/api/v1/jwt/:path*'
+        '/api/v1/tokens/:path*'
     ],
 };
 

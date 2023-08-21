@@ -2,7 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { TokenFormFields } from '@/types';
-import createJwtToken from '../utils/createJwtToken'
+import createToken from '@/utils/createToken'
 
 interface TestFormFields extends TokenFormFields {
   additionalVariables: any;
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   
     const user = sessionData.session.user;
 
-    const { tokenData, token } = await createJwtToken(user, requestBody);
+    const { tokenData, token } = await createToken(user, requestBody);
 
     const payload: Record<string, any> = { 
       "lumberjane_token": token,

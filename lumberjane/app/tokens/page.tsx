@@ -1,5 +1,5 @@
 import type { NextPage } from "next"
-import JwtForm from "./components/JwtForm"
+import TokenForm from "./components/TokenForm"
 
 
 const Dashboard: NextPage = async () => {
@@ -7,7 +7,7 @@ const Dashboard: NextPage = async () => {
 
   return (
     <div>
-      <JwtForm />
+      <TokenForm />
     </div>
   )
 }

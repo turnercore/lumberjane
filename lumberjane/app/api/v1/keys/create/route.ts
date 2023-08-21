@@ -1,4 +1,4 @@
-// /api/v1/keys/add/route.ts
+// /api/v1/keys/create/route.ts
 
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,11 +11,17 @@ export async function POST(req: NextRequest) {
         console.log('!!!!!!adding a key to supabase!!!!!');
         const supabase = createRouteHandlerClient({cookies});
         const requestBody = JSON.parse(await req.text());
+        if (!requestBody) {
+            return NextResponse.json({ error: 'No request body provided' }, { status: 400 });
+        }
+
+        const doubleEncryptPassword = requestBody.isSecret ? requestBody.password : undefined;
+        delete requestBody.password;
         const keysToAdd: Key[] = Array.isArray(requestBody) ? requestBody : [requestBody];
 
         // Encrypt the keys
         for (const key of keysToAdd) {
-            const { encrypted } = await encrypt(key.decryptedValue as string);
+            const { encrypted } = await encrypt(key.decryptedValue as string, doubleEncryptPassword);
             key.value = encrypted as string;
             //remove decryptedValue from the key object
             delete key.decryptedValue;
