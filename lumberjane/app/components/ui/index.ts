@@ -109,6 +109,14 @@ import { RadioGroup, RadioGroupItem } from './radio-group';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 import { Skeleton } from './skeleton';
+import {  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,} from './table';
 
 
 export {
@@ -226,4 +234,12 @@ export {
   TabsList,
   TabsTrigger,
   TabsContent,
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
 };

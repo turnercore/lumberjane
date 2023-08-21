@@ -2,18 +2,10 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Card,
   CardHeader,
   DialogContent,
   DialogTrigger,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
   Table,
   TableBody,
   TableCaption,
@@ -26,13 +18,10 @@ import {
   ScrollBar,
 } from "@/components/ui";
 import type { TokenData } from '@/types';
-import { toast } from 'react-toastify';
-import Link from 'next/link'; 
-
 
 // ----- Helper functions -----
 
-const fetchTokens = async () => {
+const fetchDeletedTokens = async () => {
   const supabase = createClientComponentClient();
   if (!supabase) return null;
 
@@ -46,10 +35,10 @@ const fetchTokens = async () => {
     .from('tokens')
     .select('*')
     .eq('user_id', user.id)
-    .neq('status', 'deleted');
+    .eq('status', 'deleted');
 
   if (error) {
-    console.log('Error fetching tokens!');
+    console.log('Error fetching deleted tokens!');
     return null;
   }
 
@@ -58,10 +47,9 @@ const fetchTokens = async () => {
 
 // Function to decode the token content
 function decodeTokenContent(token: string) {
-  // Your logic to decode the token content
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace('-', '+').replace('_', '/');
-    const payload = JSON.parse(atob(base64));
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  const payload = JSON.parse(atob(base64));
   return JSON.stringify(payload, null, 2);
 }
 
@@ -72,8 +60,7 @@ function extractVariables(token: TokenData) {
   return variables ? variables.map((v) => v.replace(/\$\$/g, '')) : [];
 }
 
-
-const TokenDashboard: React.FC = () => {
+const DeletedTokensDashboard: React.FC = () => {
   const supabase = createClientComponentClient();
   if (!supabase) return null;
 
@@ -81,41 +68,17 @@ const TokenDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchTokens(); // Pass cookies if needed
+      const data = await fetchDeletedTokens();
       setTokens(data || []);
     };
 
     fetchData();
   }, []);
 
-  const updateTokenStatus = async (token: TokenData, status: TokenData['status']) => {
-    //update the local state
-    const updatedTokens = tokens.map((t) => {
-      if (t.id === token.id) {
-        return { ...t, status };
-      }
-      return t;
-    });
-    setTokens(updatedTokens);
-
-    const { data, error } = await supabase
-      .from('tokens')
-      .update({ status })
-      .eq('id', token.id);
-  
-    if (error) {
-      toast.error('Error updating token status!');
-      return null;
-    }
-
-  
-    return data;
-  };
-
   return (
     <Card className="mx-auto max-w-5xl mb-20 p-3 shadow-md">
       <CardHeader className='text-center'>
-        <h1 className="text-2xl font-bold">Your Tokens</h1>
+        <h1 className="text-2xl font-bold">Your Deleted Tokens</h1>
       </CardHeader>
       <Table>
         <TableHeader>
@@ -131,7 +94,7 @@ const TokenDashboard: React.FC = () => {
         </TableHeader>
         <TableBody>
           {tokens.map((token) => (
-            <TableRow key={token.id} className={token.status === 'frozen' ? 'bg-blue-100' : token.status === 'deleted' ? 'bg-red-100' : ''}>
+            <TableRow key={token.id}>
               <TableCell className='font-bold'>{token.name}</TableCell>
               <TableCell>{token.description}</TableCell>
               <TableCell>
@@ -154,39 +117,13 @@ const TokenDashboard: React.FC = () => {
               </TableCell>
               <TableCell>{token.times_used}</TableCell>
               <TableCell>{token.times_ai_assisted}</TableCell>
-              <TableCell>
-                <Select defaultValue={token.status} 
-                    onValueChange={(value: TokenData['status']) => {
-                      console.log('token ' + token.id + ' status changed to ' + value);
-                      // Update token status
-                      updateTokenStatus(token, value);
-                    }
-                }>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Token Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Status</SelectLabel>
-                      <SelectItem value="active" className='bg-green-600'>✅ Active</SelectItem>
-                      <SelectItem value="frozen" className=' bg-blue-400'>❄️ Frozen</SelectItem>
-                      <SelectItem value="deleted" className=' bg-red-600'>❌ Deleted</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
+              <TableCell>{token.status}</TableCell>
             </TableRow>
           ))}
         </TableBody>
-
-        <TableCaption>
-        <Button asChild>
-          <Link href="/tokens/create">Create a token</Link>
-        </Button>
-        </TableCaption>
       </Table>
     </Card>
   );
 };
 
-export default TokenDashboard;
+export default DeletedTokensDashboard;

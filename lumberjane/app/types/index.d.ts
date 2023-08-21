@@ -15,6 +15,32 @@ export type User = {
 
 type authType = 'none' | 'bearer'
 
+// create table
+//   public.tokens (
+//     id uuid not null default gen_random_uuid (),
+//     created_at timestamp with time zone not null default timezone ('utc'::text, now()),
+//     name text null,
+//     description text null,
+//     expiration timestamp with time zone null,
+//     user_id uuid not null,
+//     token text not null,
+//     status text null default 'active'::text,
+//     constraint jwt_tokens_pkey primary key (id),
+//     constraint tokens_user_id_fkey foreign key (user_id) references auth.users (id) on delete cascade
+//   ) tablespace pg_default;
+export type TokenData = {
+  id: UUID;
+  name: string;
+  description: string;
+  token: string;
+  user: UUID;
+  expiration: Date;
+  status: 'active' | 'frozen' | 'deleted';
+  created_at: Date;
+  times_used: number;
+  times_ai_assisted: number;
+};
+
 export type Token = {
     info: {
         key?: UUID;

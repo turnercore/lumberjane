@@ -54,7 +54,7 @@ function verifyToken(token: string): Token | void {
 
 async function checkExpiration(decodedToken: Token): Promise<boolean> {
   const expirationRestriction: ExpirationRestriction = decodedToken.restrictions?.find((r: any) => r.type === 'expirationDate') as ExpirationRestriction;
-  if (expirationRestriction && new Date(expirationRestriction.rule.date) < new Date()) {
+  if (expirationRestriction && new Date(expirationRestriction.rule.expirationDate) < new Date()) {
     return true;
   }
   const { data: tokenRecord, error: dbError } = await supabase

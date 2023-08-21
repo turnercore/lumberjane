@@ -24,7 +24,8 @@ import {
   SelectValue,
   RadioGroup,
   Label,
-  RadioGroupItem,  
+  RadioGroupItem,
+  CardHeader,  
 } from "@/components/ui";
 import { useState } from "react";
 import type { TokenFormFields } from "@/types"
@@ -70,7 +71,7 @@ const tokenSchema = z.object({
   request: z.string().default('').optional(),
   expectedResponse: z.string().default('').optional(),
   method: z.enum(["POST", "GET", "DELETE", "PUT", "PATCH"]).default("POST"),
-  logEnabled: z.boolean().default(false),
+  logEnabled: z.boolean().default(true),
   logResponse: z.boolean().default(false),
   key: z.string().optional().default(''),
   restrictions: z.array(z.string()).default([]),
@@ -124,7 +125,7 @@ export default function tokenForm() {
       key: data.key,
       restrictions: data.restrictions || [],
       logResponse: data.logResponse || false,
-      logEnabled: data.logEnabled || false,
+      logEnabled: data.logEnabled || true,
       aiEnabled: data.aiEnabled || false,
       openAIKey: data.openAIKey || '',
     };
@@ -229,7 +230,6 @@ export default function tokenForm() {
         body: JSON.stringify(body),
       });
       const result = await response.json();
-      console.log(result);
       setTestResult(JSON.stringify(result, null, 2));
     } catch (error) {
       console.error(error);
@@ -264,10 +264,12 @@ export default function tokenForm() {
   return (
     <div>
     <Card className="mx-auto max-w-3xl mb-20 p-3 shadow-md">
-      <h1 className='text-center text-xl'>Create a New Request Token</h1>
-      <div className="flex gap-4 justify-end">
-        <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
-      </div>
+      <CardHeader>
+        <h1 className='text-center text-xl'>Create a New Request Token</h1>
+        <div className="flex gap-4 justify-end">
+          <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
+        </div>
+      </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
