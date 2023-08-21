@@ -11,6 +11,12 @@ export async function POST(req: NextRequest) {
     const requestBody = JSON.parse(await req.text());
     const updatedProfile: UserProfile = requestBody;
     const userId = updatedProfile.id; // Assuming the user ID is included in the request
+    const password = requestBody.password; // Assuming the user ID is included in the request
+
+    let passError;
+    if(password) {
+      const { data:passData, error: passError} = await supabase.auth.updateUser({ password });
+    }
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required.' }, { status: 400 });
@@ -23,9 +29,10 @@ export async function POST(req: NextRequest) {
         ...updatedProfile,
       });
 
-    if (error) {
-      console.error('Error updating profile:', error);
-      return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    if (error || passError ) {
+      if (error) console.error('Error updating profile:', error);
+      if (passError) console.error('Error updating password:', passError);
+      return NextResponse.json({ error: 'error updating the profile data with supabase' }, { status: 500 });
     } else {
       return NextResponse.json({ success: true, data });
     }

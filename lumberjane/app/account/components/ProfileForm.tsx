@@ -17,19 +17,43 @@ type ProfileFormProps = {
 const ProfileForm = ({ profile, user }: ProfileFormProps) => {
   const [formProfile, setFormProfile] = useState<UserProfile>(profile);
   const [profileDataChanged, setProfileDataChanged] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   const handleChange = (field: keyof UserProfile, value: any) => {
     setProfileDataChanged(true);
     setFormProfile({ ...formProfile, [field]: value });
   };
 
+  const handlePasswordChange = (e: any) => {
+    setPassword(e.target.value);
+  }
+
+  const handleConfirmPasswordChange = (e: any) => {
+    setConfirmPassword(e.target.value);
+    if(e.target.value === password) setProfileDataChanged(true);
+  }
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      if (password !== confirmPassword) {
+        toast.error('Passwords do not match!');
+        return;
+      }
+      if (!profileDataChanged) {
+        toast.error('No changes to update!');
+        return;
+      }
+      if (password && password.length < 8) {
+        toast.error('Password must be at least 8 characters!');
+        return;
+      }
+      const payload = { ...formProfile, password };
       const response = await fetch('http://localhost:3000/api/v1/profiles/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formProfile),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -78,6 +102,12 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
           <div> 
             <Label htmlFor='email' className='justify-evenly'>Email</Label>
             <Input type='email' id='email' value={user.email} className="w-full" disabled />
+          </div>
+          <div>
+            <Label htmlFor='password' className='justify-evenly' >New Password</Label>
+            <Input type='password' id='password' value={password} placeholder='********' className="w-full" onBlur={handlePasswordChange}/>
+            <Label htmlFor='confirmPassword' className='justify-evenly'>Confirm Password</Label>
+            <Input type='password' id='confirmPassword' value={confirmPassword} placeholder='********' className="w-full" onBlur={handleConfirmPasswordChange} />
           </div>
       </form>
     </CardContent>
