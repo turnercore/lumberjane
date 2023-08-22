@@ -28,7 +28,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 
 type KeyAddDialogProps = {
-  onAddKey: (key: Key) => void;
+  onAddKey?: (key: Key) => void;
   children: React.ReactNode;
 };
 
@@ -91,7 +91,7 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
       .then((data) => {
         if (data.success) {
           // Add key to state
-          onAddKey(data.key);
+          if (onAddKey) onAddKey(data.key);
         } else {
           console.log('Error creating key!');
         }
@@ -110,7 +110,9 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
       isSecret: data.isSecret
     }
 
-    onAddKey(key); 
+    if (onAddKey) onAddKey(key);
+    //If no onAddKey, refresh page to make sure the new key is in the list
+    else window.location.reload();
 
     form.reset();
     // Get a new uuid for the next key

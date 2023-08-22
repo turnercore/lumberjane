@@ -5,7 +5,6 @@ import type { ExpirationRestriction, Token, ServerError, StandardResponse } from
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
 const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function validateToken(token: string, isTest: boolean = false): Promise<StandardResponse> {
   const decodedToken = verifyToken(token);
@@ -53,6 +52,7 @@ function verifyToken(token: string): Token | void {
 }
 
 async function checkExpiration(decodedToken: Token): Promise<boolean> {
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const expirationRestriction: ExpirationRestriction = decodedToken.restrictions?.find((r: any) => r.type === 'expirationDate') as ExpirationRestriction;
   if (expirationRestriction && new Date(expirationRestriction.rule.expirationDate) < new Date()) {
     return true;
@@ -74,6 +74,7 @@ async function checkExpiration(decodedToken: Token): Promise<boolean> {
 }
 
 async function checkRevocation(decodedToken: Token): Promise<boolean> {
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
   const { data: tokenData, error: supabaseError } = await supabase
     .from('tokens')
     .select('status')

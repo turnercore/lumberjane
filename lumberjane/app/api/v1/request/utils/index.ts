@@ -4,6 +4,7 @@ import openAiAssist from './openAiAssist'
 import fetchAndDecryptKey from './fetchAndDecryptKey'
 import makeApiRequest from './makeApiRequest'
 import processResponse from './processResponse'
+import logRequest from './logRequest'
 
 
 export {
@@ -13,4 +14,5 @@ export {
     processResponse,
     openAiAssist,
     fetchAndDecryptKey,
+    logRequest,
 }

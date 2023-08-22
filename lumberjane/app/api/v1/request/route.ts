@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { makeApiRequest, prepareRequest, validateToken, processResponse } from './utils';
+import { makeApiRequest, prepareRequest, validateToken, processResponse, logRequest } from './utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,10 +19,15 @@ export async function POST(req: NextRequest) {
     console.log('isTest:', isTest);
 
     // Validate the token
-
     const { data: decodedToken, error: validateError } = await validateToken(token, isTest);
     if (validateError || !decodedToken) {
       return NextResponse.json({ error: [validateError ? validateError.message : 'error validating token'] }, { status: validateError ? validateError.status : 500 });
+    }
+
+    //Log the request
+    const { data: logResponse, error: logError } = await logRequest(decodedToken, requestBody);
+    if (logError || !logResponse) {
+      console.error('Error logging request:', logError);
     }
 
     // Prepare the request
@@ -41,6 +46,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: [apiError.message] }, { status: apiError.status });
     }
 
+    // TODO log the response if enabled
+
     // If there is an expected response, try to fit the response into the expected response schema
     if(decodedToken.info.formatResponse) {
       const { data: formattedResponse, error: processResponseError } = await processResponse(responseData, decodedToken.expectedResponse, decodedToken.info.ai_enabled);
@@ -55,6 +62,8 @@ export async function POST(req: NextRequest) {
       console.log(responseData);
       return NextResponse.json(responseData, { status: 200 });
     }
+
+    // TODO log the ai assisted response, if enabled
 
   } catch (error) {
     console.error('ERROR IN REQUEST:', error);

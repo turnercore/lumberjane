@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import type { Key } from '@/types';
-import { Label, Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui';
+import { DialogClose, DialogContent, DialogTrigger, Label, Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger, Dialog, DialogHeader } from '@/components/ui';
 import KeyAddDialog from '@/components/client/KeyAddDialog';
 
 
@@ -38,7 +38,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          setKeys((prevKeys) => prevKeys.filter((key) => key.id !== keyId));
+          setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId));
         } else {
           console.log('Error deleting key!');
         }
@@ -48,7 +48,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
       });
 
       // Delete key from state
-      setKeys((prevKeys) => prevKeys.filter((key) => key.id !== keyId));
+      setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId));
   };
 
   return (
@@ -65,12 +65,29 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
               </p>
             </div>
             <div className="space-x-2">
-            <Button onClick={() => toggleKeyVisibility(key.id!)}>
-                {keyVisibility[key.id!] ? 'Hide' : 'Show'}
+            <Button onClick={() => toggleKeyVisibility(key?.id!)}>
+                {keyVisibility[key?.id!] ? 'Hide' : 'Show'}
             </Button>
-            <Button variant="destructive" onClick={() => handleDeleteKey(key)}>
-              Delete
-            </Button>
+            <Dialog>
+              <DialogTrigger> 
+              <Button variant="destructive">
+                Delete
+              </Button>
+              </DialogTrigger>
+              <DialogContent className='text-center'>
+                <DialogHeader className='text-center'>
+                  <h1 className="text-lg font-bold text-center">Delete Key "{key?.name?.toUpperCase()}"</h1>
+                </DialogHeader>
+                <h2>Are you sure you want to delete this key?</h2>
+                <div className='flex justify-center space-x-2'>
+                  <DialogClose>
+                    <Button variant='default'>No, Take me to Safety</Button>
+                  </DialogClose>
+                    <Button variant='destructive' onClick={() => handleDeleteKey(key)}>Delete It!</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             </div>
           </div>
         ))}
