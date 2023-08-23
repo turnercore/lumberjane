@@ -88,7 +88,9 @@ const tokenSchema = z.object({
 export type TestVariable = Record<string, string>;
 
 export default function tokenForm() {
-  let isDebugEnabled = true;
+  //TODO: Let this be controlled by the user's settings
+  let isDebugEnabled = false;
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -132,7 +134,7 @@ export default function tokenForm() {
       request: "",
       expectedResponse: "",
       method: "POST",
-      logEnabled: false,
+      logEnabled: true,
       logResponse: false,
       key: "",
       aiEnabled: false,
