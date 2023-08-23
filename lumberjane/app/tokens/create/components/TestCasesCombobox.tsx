@@ -27,7 +27,7 @@ export function TestCasesCombobox({
   const [value, setValue] = React.useState("");
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 justify-between">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -39,14 +39,14 @@ export function TestCasesCombobox({
           >
             {value
               ? exampleTokens.find((testCase: TestCase) => testCase.name === value)?.name
-              : "Select Test Case..."}
+              : "Token Templates..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandInput placeholder="Example Tokens" />
-            <CommandEmpty>No Test Token For That...</CommandEmpty>
+            <CommandEmpty>No Templates Found...</CommandEmpty>
             <CommandGroup>
               {exampleTokens.map((testCase: TestCase) => (
                 <CommandItem

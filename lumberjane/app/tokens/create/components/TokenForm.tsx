@@ -248,11 +248,9 @@ export default function tokenForm() {
   return (
     <div>
     <Card className="mx-auto max-w-3xl mb-20 p-3 shadow-md">
-      <CardHeader>
+      <CardHeader className="p-3 gap-2">
         <h1 className='text-center text-xl'>Create a New Request Token</h1>
-        <div className="flex gap-4 justify-end">
-          <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
-        </div>
+        <TestCasesCombobox handleFillForm={handleFillForm} handleClearForm={handleClearForm} />
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -508,9 +506,19 @@ export default function tokenForm() {
           />
 
           {/* Other sections will go here */}
-          <div className="flex justify-center">
+          <div className="flex justify-between gap-4">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              variant='default'
+              className="text-xl bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 flex items-center justify-center gap-2 px-4 py-2 rounded-md"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Create Token</span>
+            </Button>
             {isDebugEnabled && (<PrintFormValues form={form} />)}
-            <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
             <TestSheet form={form} onTest={onTest} isTesting={isTesting} testResult={testResult} testVariables={testVariables} setTestVariables={setTestVariables}/>
           </div>
         </form>
