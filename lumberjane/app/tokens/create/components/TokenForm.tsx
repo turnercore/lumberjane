@@ -4,7 +4,6 @@ import * as z from "zod";
 import { FieldValues, useForm } from "react-hook-form";
 import {
   Card,
-  Textarea,
   Button,
   Form,
   FormControl,
@@ -15,13 +14,6 @@ import {
   FormMessage,
   Input,
   Switch,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
   RadioGroup,
   Label,
   RadioGroupItem,
@@ -35,7 +27,10 @@ import RestrictionsDropdown from "./RestrictionsDropdown";
 import TestSheet from "./TestSheet";
 import  { TestCasesCombobox } from "./TestCasesCombobox";
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import convertToJSON from "@/utils/convertToJSON";
+import { isValidJSON, convertToJSON } from "@/utils/jsonUtils";
+
+//for testing
+import PrintFormValues from '@/components/testing/PrintFormValues';
 
 
 const expectedResponseExplainer: string = `
@@ -47,19 +42,7 @@ You can enable AI Assist to help find fields and make sure the response conforms
 If the fields cannot be found the server will return an error and no data.
 `;
 
-const isValidJSON = (value: string) => {
-  if(value == '' || value === "{}") return true;
-  else {
-    try {
-      const convertedValue = convertToJSON(value);
-      JSON.parse(convertedValue);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-};
-
+//Zod validation schema
 const tokenSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -105,6 +88,7 @@ const tokenSchema = z.object({
 export type TestVariable = Record<string, string>;
 
 export default function tokenForm() {
+  let isDebugEnabled = true;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -525,6 +509,7 @@ export default function tokenForm() {
 
           {/* Other sections will go here */}
           <div className="flex justify-center">
+            {isDebugEnabled && (<PrintFormValues form={form} />)}
             <Button type="submit" disabled={isLoading ? true : false} variant='outline' className="text-xl bg-green-200">Create Token</Button>
             <TestSheet form={form} onTest={onTest} isTesting={isTesting} testResult={testResult} testVariables={testVariables} setTestVariables={setTestVariables}/>
           </div>

@@ -57,7 +57,7 @@ export type Token = {
         ai_enabled: boolean;
         ai_key?: UUID;
     };
-    restrictions: Array<Object>; // You may want to define a specific type for restrictions
+    restrictions: Restriction[]; // You may want to define a specific type for restrictions
     request: string;
     expectedResponse?: string;
     log: {
@@ -97,16 +97,14 @@ export type RestrictionType = 'headerTags' | 'ipAddresses' | 'timeOfDay' | 'expi
 
 export interface Restriction {
   type: RestrictionType;
-  rule: {
-    [key: string]: any;
-  }
+  rule: any; // You may want to define a specific type for each restriction type
 }
 
 export interface HeaderRestriction extends Restriction {
   type: 'headerTags';
   rule: {
-    tagName: string;
-    tagValue: string;
+    tag: string;
+    value: string;
   };
 }
 

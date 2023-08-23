@@ -1,4 +1,6 @@
-export default function convertToJSON(inputStr: string): string {
+//Helper functions for working with JSON
+
+const convertToJSON = (inputStr: string): string => {
   // Preprocess the input by removing quotes and condensing spaces
   inputStr = inputStr.replace(/[\'\"]/g, '');
   inputStr = inputStr.replace(/\s+/g, ' ').trim();
@@ -48,3 +50,19 @@ export default function convertToJSON(inputStr: string): string {
 
   return result;
 }
+
+
+const isValidJSON = (value: string) => {
+  if(value == '' || value === "{}") return true;
+  else {
+    try {
+      const convertedValue = convertToJSON(value);
+      JSON.parse(convertedValue);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+};
+
+export { convertToJSON, isValidJSON };

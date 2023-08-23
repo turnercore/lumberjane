@@ -1,10 +1,7 @@
 import type { NextPage } from "next"
 import TokenForm from "./components/TokenForm"
 
-
-const Dashboard: NextPage = async () => {
-
-
+const Dashboard: NextPage = () => {
   return (
     <div>
       <TokenForm />

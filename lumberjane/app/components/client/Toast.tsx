@@ -1,7 +1,7 @@
 "use client"
 import { ToastContainer } from 'react-toastify'
 
-const Toast = (isDark: any = false) => {
+const Toast = (isDark: boolean = false) => {
     return (<ToastContainer
     position="bottom-center"
     autoClose={5000}

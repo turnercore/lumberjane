@@ -8,6 +8,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   Button,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
 } from "@/components/ui";
 import KeyAddDialog from '@/components/client/KeyAddDialog'; // Import KeyAddDialog component
 import { cookies } from "next/headers";
@@ -18,38 +22,6 @@ export default async function NavBar() {
   const supabase = createServerComponentClient({ cookies });
   const { data } = await supabase.auth.getSession();
   const user = data?.session?.user;
-
-  const dashboardMenu = [
-    {
-      title: "Tokens",
-      href: "/tokens",
-      description: "Manage your tokens",
-      icon: (
-        <Link href="/tokens/create">
-          <a>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 cursor-pointer">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-          </a>
-        </Link>
-      ),
-    },
-    {
-      title: "Keys",
-      href: "/keys",
-      description: "Manage your keys",
-      icon: (
-        <KeyAddDialog>
-          <Button>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-          </Button>
-        </KeyAddDialog>
-      ),
-    },
-    { title: "Account", href: "/account", description: "Manage your account" },
-  ];
 
   return (
     <NavigationMenu>
@@ -100,13 +72,22 @@ export default async function NavBar() {
                       Keys
                     </NavigationMenuLink>
                   </Link>
+                  <TooltipProvider>
+                  <Tooltip>
                     <KeyAddDialog>
-                      <Button>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                      </Button>
+                      <TooltipTrigger asChild>
+                          <Button variant='outline' size='icon'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                          </Button>
+                      </TooltipTrigger>
                     </KeyAddDialog>
+                    <TooltipContent>
+                      <p>Create a new key.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <div className="flex items-center justify-between">
                   <Link href='/tokens' passHref legacyBehavior>
@@ -114,12 +95,23 @@ export default async function NavBar() {
                       Tokens
                     </NavigationMenuLink>
                   </Link>
-                  <Link href='/tokens/create'>
-                    <Button><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    </Button>
-                  </Link>
+                  <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link href='/tokens/create'>
+                        <Button variant='outline' size='icon'>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                          </svg>
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Create a new token.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  </TooltipProvider>
+                  
                 </div>
                 <div className="flex items-center">
                 <Link href='/account' passHref legacyBehavior>
@@ -130,6 +122,7 @@ export default async function NavBar() {
                 </div>
               </NavigationMenuContent>
           </NavigationMenuItem>
+
         ) : (
           <NavigationMenuItem>
           <Link href="/login" legacyBehavior passHref>
