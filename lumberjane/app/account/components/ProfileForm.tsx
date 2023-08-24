@@ -5,6 +5,7 @@ import SignOutButton from '@/components/client/SignOutButton';
 import type { User } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
 import type { UserProfile } from '@/types';
+import { ProfilePictureUploadButton } from './ProfilePictureUploadButton';
 
 //TODO: This should be refactored into a form and validated with zod. See the dashboard for an example
 
@@ -21,6 +22,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
   const [profileDataChanged, setProfileDataChanged] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [profileImageUrl, setProfileImageUrl] = useState<string>(profile.avatar_url || '');
 
   const handleChange = (field: keyof UserProfile, value: any) => {
     setProfileDataChanged(true);
@@ -73,17 +75,22 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
 
   return (
 
-    <Card className="mx-auto max-w-sm shadow-md">
+    <Card className="mx-auto max-w-sm shadow-md mb-2">
     <CardHeader className="justify-center text-center">
       <CardTitle>{user.email}</CardTitle>
-      <CardDescription>Update your profile</CardDescription>
+      <CardDescription >Update your profile</CardDescription>
+      <br />
+      <div className='justify-center text-center'>
+            <ProfilePictureUploadButton setProfileImageUrl={setProfileImageUrl}>
+              <Avatar className='always-floating-element w-64 h-64 mx-auto shadow-lg'>
+                <AvatarImage className="object-cover object-center" src={profileImageUrl} />
+                <AvatarFallback>{profile.username ? profile.username?.charAt(0) : '🪵'}</AvatarFallback>
+              </Avatar>
+            </ProfilePictureUploadButton>
+        </div>
     </CardHeader>
     <CardContent>
       <form onSubmit={handleSubmit} id="profileForm">
-        <Avatar className='always-floating-element w-64 h-64 mx-auto'>
-          <AvatarImage className="object-cover object-center" src={formProfile.avatar_url?.toString()} />
-          <AvatarFallback>{profile.username ? profile.username?.charAt(0) : '🪵'}</AvatarFallback>
-        </Avatar>
         {Object.keys(formProfile)
           .filter((key) => !omitFields.includes(key))
           .map((key) => (
