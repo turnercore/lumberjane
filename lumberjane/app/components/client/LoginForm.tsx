@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsCo
 import { Provider } from '@supabase/supabase-js';
 
 const providersENV = process.env.NEXT_PUBLIC_PROVIDERS || '';
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
 
 export default function LoginForm() {
     const supabase = createClientComponentClient();
@@ -48,7 +49,7 @@ export default function LoginForm() {
                   theme="light"
                   showLinks={false}
                   providers={providers}
-                  redirectTo="http://localhost:3000/api/v1/auth/callback"
+                  redirectTo= {appUrl + "/api/v1/auth/callback"}
                 />
               </CardContent>
             </Card>
@@ -67,7 +68,7 @@ export default function LoginForm() {
                   theme="light"
                   showLinks={false}
                   providers={providers}
-                  redirectTo="http://localhost:3000/api/v1/auth/callback"
+                  redirectTo={appUrl + "/api/v1/auth/callback"}
                 />
               </CardContent>
             </Card>
@@ -86,7 +87,7 @@ export default function LoginForm() {
                   theme="light"
                   showLinks={false}
                   providers={providers}
-                  redirectTo="http://localhost:3000/api/v1/auth/callback"
+                  redirectTo={appUrl + "/api/v1/auth/callback"}
                 />
               </CardContent>
             </Card>

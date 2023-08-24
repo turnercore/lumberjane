@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     console.log('payload:', payload);
 
     // Send the request to the /api/v1/request endpoint
-    const response = await fetch(`http://localhost:3000/api/v1/request`, {
+    const response = await fetch(`/api/v1/request`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -54,7 +54,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
         return
       }
       const payload = { ...formProfile, password }
-      const response = await fetch('http://localhost:3000/api/v1/profiles/update', {
+      const response = await fetch('/api/v1/profiles/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
