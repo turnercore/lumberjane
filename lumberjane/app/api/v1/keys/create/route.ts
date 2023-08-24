@@ -1,13 +1,10 @@
 // /api/v1/keys/create/route.ts
-
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import type { Key } from '@/types';
 import { encrypt } from '@/utils/crypto';
-
+import { cookies } from 'next/headers';
 export const dynamic = 'force-dynamic'
-
 
 export async function POST(req: NextRequest) {
     try {

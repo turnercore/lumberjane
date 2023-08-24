@@ -2,10 +2,9 @@ import { NextPage } from 'next'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import KeyList from './components/KeyList'
 import { Key } from '@/types'
-import { cookies } from 'next/headers'
 import { decrypt } from '@/utils/crypto'
 import { Card, CardContent, CardTitle } from '@/components/ui'
-
+import { cookies } from 'next/headers'
 export const dynamic = 'force-dynamic'
 
 const KeysDashboard: NextPage = async () => {

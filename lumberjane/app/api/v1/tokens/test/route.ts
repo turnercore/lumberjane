@@ -1,9 +1,8 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import type { TokenFormFields } from '@/types'
 import createToken from '@/utils/createToken'
-
+import { cookies } from 'next/headers'
 export const dynamic = 'force-dynamic'
 
 interface TestFormFields extends TokenFormFields {

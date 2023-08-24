@@ -1,10 +1,8 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import type { KeyId } from '@/types';
-
+import { cookies } from 'next/headers';
 export const dynamic = 'force-dynamic'
-
 
 export async function DELETE(req: NextRequest) {
     try {
