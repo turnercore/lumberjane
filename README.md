@@ -25,3 +25,13 @@ Lumberjane is a backend service designed to generate JWTs for client apps, games
 9. Custom Headers: Custom headers can be added to requests, such as an API key header.
 
 10. Custom Origin: Requests can be sent from a custom origin, such as a domain name.
+
+
+Things that need to be configured with supabase:
+1. Redirect URL
+2. Tables with RLS (profiles, keys, tokens, logs)
+3. Storage bucket 'avatars' with public access and user policy (user's get their own folder with their user id)
+
+Bugs: 
+Known issue with static page generation and cookies:
+https://github.com/vercel/next.js/issues/49373
