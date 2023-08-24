@@ -46,10 +46,11 @@ function extractVariables(token: TokenData) {
 }
 
 type TokenTableProps = {
-  passedTokens: TokenData[] | null;
+  passedTokens: TokenData[];
 };
 
-export default function TokenTable({passedTokens}: TokenTableProps) {
+export default function TokenTable({passedTokens = []}: TokenTableProps) {
+  const [tokens, setTokens] = useState<TokenData[]>(passedTokens);
   if (!passedTokens) {
     toast.error('No tokens found!');
     
@@ -71,8 +72,8 @@ export default function TokenTable({passedTokens}: TokenTableProps) {
 
   
   const supabase = createClientComponentClient();
-  if (!supabase) return null;
-  const [tokens, setTokens] = useState<TokenData[]>(passedTokens);
+  
+  if (!supabase) return (<div></div>);
 
   const updateTokenStatus = async (token: TokenData, status: TokenData['status']) => {
     //update the local state
@@ -131,7 +132,7 @@ export default function TokenTable({passedTokens}: TokenTableProps) {
               </TableCell>
               <TableCell>
                 {extractVariables(token).map((variable, index) => (
-                  <div key={index}>"{variable}"</div>
+                  <div key={index}>{variable}</div>
                 ))}
               </TableCell>
               <TableCell>{token.times_used}</TableCell>

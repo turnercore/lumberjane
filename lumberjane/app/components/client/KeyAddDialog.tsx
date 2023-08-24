@@ -77,7 +77,7 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
   //On mount set a random uuid for the key id
   useEffect(() => {
     form.setValue('id', uuidv4());
-  }, []);
+  }, [form]);
 
   const onSubmit = (data: FieldValues) => {
     fetch('/api/v1/keys/create', {
@@ -204,7 +204,7 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
                   <FormDescription>
                     <h4>Extra password used to double-encrypt the key.</h4>
                     <p className="font-bold text-red-500"> WARNING: If you lose this password the key will be unrecoverable.</p>
-                    <p>You must include this password as a 'token_password' field in your request with ANY TOKEN made with this key.</p>
+                    <p>You must include this password as a &apos;token_password&apos; field in your request with ANY TOKEN made with this key.</p>
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

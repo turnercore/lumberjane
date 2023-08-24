@@ -32,46 +32,11 @@ type DropdownKey = {
 }
 
 export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownProps) {
-  const supabase = createClientComponentClient()
   const [keys, setKeys] = useState<DropdownKey[]>([])
   const [open, setOpen] = useState(false)
   const [pickedKey, setPickedKey] = useState<Key | null>(null)
 
-  const fetchKeys = async () => {
-    try {
-      const { data, error } = await supabase.auth.getSession()
-      if (error || !data || !data.session) {
-        console.log("Error fetching session.")
-        throw error || new Error("Error fetching session.")
-      }
-      const user = data.session.user || null
-      if (!user) {
-        throw new Error("User is not logged in.")
-      }
 
-      const { data: keys, error: keyError } = await supabase.from("keys").select("*").eq("userId", user.id)
-      if (keyError) {
-        console.log("Error fetching keys.")
-        throw keyError
-      }
-
-      // Update keys with name and description
-      const dropdownKeys: DropdownKey[] = []
-      for (const key of keys) {
-        dropdownKeys.push({
-          id: key.id,
-          name: key.name,
-          description: key.description,
-        })
-      }
-
-      setKeys(dropdownKeys)
-
-    } catch(err) {
-      console.log("Error fetching keys.")
-      console.log(err)
-    }
-  }
 
   const handleAddKey = (key: Key) => {
     if(!key || !key.id) return
@@ -82,6 +47,42 @@ export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownPr
 
   //Fetch the user's session and get keys from the database on mount
   useEffect(() => {
+    const fetchKeys = async () => {
+      try {
+        const supabase = createClientComponentClient()
+        const { data, error } = await supabase.auth.getSession()
+        if (error || !data || !data.session) {
+          console.log("Error fetching session.")
+          throw error || new Error("Error fetching session.")
+        }
+        const user = data.session.user || null
+        if (!user) {
+          throw new Error("User is not logged in.")
+        }
+  
+        const { data: keys, error: keyError } = await supabase.from("keys").select("*").eq("userId", user.id)
+        if (keyError) {
+          console.log("Error fetching keys.")
+          throw keyError
+        }
+  
+        // Update keys with name and description
+        const dropdownKeys: DropdownKey[] = []
+        for (const key of keys) {
+          dropdownKeys.push({
+            id: key.id,
+            name: key.name,
+            description: key.description,
+          })
+        }
+  
+        setKeys(dropdownKeys)
+  
+      } catch(err) {
+        console.log("Error fetching keys.")
+        console.log(err)
+      }
+    }
     fetchKeys()
   }, [])
 
