@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import * as React from "react"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -10,21 +10,21 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui";
-import { exampleTokens } from "./examples/exampleTokens";
-import { TokenFormFields } from "@/types";
+} from "@/components/ui"
+import { exampleTokens } from "./examples/exampleTokens"
+import { TokenFormFields } from "@/types"
 
-type TestCase = Partial<TokenFormFields>;
+type TestCase = Partial<TokenFormFields>
 
 export function TestCasesCombobox({
   handleFillForm,
   handleClearForm,
 }: {
-  handleFillForm: (testCase: any) => void;
-  handleClearForm: () => void;
+  handleFillForm: (testCase: any) => void
+  handleClearForm: () => void
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState("")
 
   return (
     <div className="flex gap-4 justify-between">
@@ -52,10 +52,10 @@ export function TestCasesCombobox({
                 <CommandItem
                   key={testCase.name}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                    handleClearForm(); // Clear the form first
-                    handleFillForm(testCase); // Call the handler with the selected test case
+                    setValue(currentValue === value ? "" : currentValue)
+                    setOpen(false)
+                    handleClearForm() // Clear the form first
+                    handleFillForm(testCase) // Call the handler with the selected test case
                   }}
                 >
                   <Check
@@ -70,5 +70,5 @@ export function TestCasesCombobox({
       </Popover>
       <Button onClick={handleClearForm}>Clear Form</Button>
     </div>
-  );
+  )
 }

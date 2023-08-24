@@ -1,7 +1,7 @@
-'use client';
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { FieldValues, useForm } from "react-hook-form";
+'use client'
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { FieldValues, useForm } from "react-hook-form"
 import {
   Card,
   Button,
@@ -18,19 +18,19 @@ import {
   Label,
   RadioGroupItem,
   CardHeader,  
-} from "@/components/ui";
-import { useState } from "react";
+} from "@/components/ui"
+import { useState } from "react"
 import type { TokenFormFields } from "@/types"
-import KeysDropdown from "./KeysDropdown";
-import { useRouter } from "next/navigation";
-import RestrictionsDropdown from "./RestrictionsDropdown";
-import TestSheet from "./TestSheet";
-import  { TestCasesCombobox } from "./TestCasesCombobox";
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import { isValidJSON, convertToJSON } from "@/utils/jsonUtils";
+import KeysDropdown from "./KeysDropdown"
+import { useRouter } from "next/navigation"
+import RestrictionsDropdown from "./RestrictionsDropdown"
+import TestSheet from "./TestSheet"
+import  { TestCasesCombobox } from "./TestCasesCombobox"
+import CodeEditor from '@uiw/react-textarea-code-editor'
+import { isValidJSON, convertToJSON } from "@/utils/jsonUtils"
 
 //for testing
-import PrintFormValues from '@/components/testing/PrintFormValues';
+import PrintFormValues from '@/components/testing/PrintFormValues'
 
 
 const expectedResponseExplainer: string = `
@@ -40,7 +40,7 @@ Example:  { "name" : "string", "age" : "number" }
 Only fields here will be returned. You can omit fields to make sure they are not returned with the response.
 You can enable AI Assist to help find fields and make sure the response conforms to expected response.
 If the fields cannot be found the server will return an error and no data.
-`;
+`
 
 //Zod validation schema
 const tokenSchema = z.object({
@@ -67,39 +67,39 @@ const tokenSchema = z.object({
       path: ['key'],
       message: "You must select an API key to use for the request.",
       code: z.ZodIssueCode.custom,
-    });
+    })
   }
   if (obj.method === "POST" && (!obj.request || !isValidJSON(obj.request))) {
     ctx.addIssue({
       path: ['request'],
       message: "Request must be a valid JSON object for POST method.",
       code: z.ZodIssueCode.custom,
-    });
+    })
   }
   if (obj.expectedResponse && !isValidJSON(obj.expectedResponse)) {
     ctx.addIssue({
       path: ['expectedResponse'],
       message: "Expected Response must be a valid JSON object.",
       code: z.ZodIssueCode.custom,
-    });
+    })
   }
-});
+})
 
-export type TestVariable = Record<string, string>;
+export type TestVariable = Record<string, string>
 
 export default function TokenForm() {
   //TODO: Let this be controlled by the user's settings
-  let isDebugEnabled = false;
+  let isDebugEnabled = false
 
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [testResult, setTestResult] = useState<string | null>(null);
-  const [testError, setTestError] = useState<string | null>(null);
-  const [isTesting, setIsTesting] = useState<boolean>(false);
-  const [testVariables, setTestVariables] = useState<TestVariable[]>([]);
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [testResult, setTestResult] = useState<string | null>(null)
+  const [testError, setTestError] = useState<string | null>(null)
+  const [isTesting, setIsTesting] = useState<boolean>(false)
+  const [testVariables, setTestVariables] = useState<TestVariable[]>([])
 
   const setTokenFormFields = (data: FieldValues): TokenFormFields => {
-    const jsonRequest = convertToJSON(data.request);
+    const jsonRequest = convertToJSON(data.request)
     return {
       name: data.name,
       authType: data.authType || 'bearer',
@@ -114,14 +114,14 @@ export default function TokenForm() {
       logEnabled: data.logEnabled || true,
       aiEnabled: data.aiEnabled || false,
       openAIKey: data.openAIKey || '',
-    };
-  };
+    }
+  }
 
   const addNewKey = () => {
-    console.log("Adding new key!");
+    console.log("Adding new key!")
     //For now redirect to the /keys page
     //This will instead be a sheet that pops up to add a new key
-    router.push("/keys");
+    router.push("/keys")
   }
 
   const form = useForm({
@@ -143,32 +143,32 @@ export default function TokenForm() {
       authType: "bearer",
     },
 
-  });
+  })
 
   const onSubmit = async (data: FieldValues) => {
-    console.log('Submitting form data:', data);
+    console.log('Submitting form data:', data)
     //TODO ADD TOAST
-    setIsLoading(true);
+    setIsLoading(true)
   
     // Check if AI Assist is enabled and validate the openAIKey field
     if (data.aiEnabled && (!data.openAIKey || data.openAIKey.length < 5)) {
       // Handle the validation error for openAIKey
-      console.error("You must select an OpenAI key to use for the AI assist.");
-      setIsLoading(false);
-      return;
+      console.error("You must select an OpenAI key to use for the AI assist.")
+      setIsLoading(false)
+      return
     }
   
     // Validate the rest of the data using tokenSchema
-    const result = tokenSchema.safeParse(data);
+    const result = tokenSchema.safeParse(data)
   
     if (!result.success) {
       // Handle other validation errors
-      console.error("Validation errors:", result.error);
-      setIsLoading(false);
-      return;
+      console.error("Validation errors:", result.error)
+      setIsLoading(false)
+      return
     }
 
-    const formData: TokenFormFields = setTokenFormFields(data);
+    const formData: TokenFormFields = setTokenFormFields(data)
   
     // Continue processing the valid data
     // Handle submission logic here
@@ -176,36 +176,36 @@ export default function TokenForm() {
     const response = await fetch('/api/v1/tokens/create', {
       method: 'POST',
       body: JSON.stringify(formData),
-    });
+    })
 
-    const responseData = await response.json();
-    console.log(responseData);
-    setIsLoading(false);
+    const responseData = await response.json()
+    console.log(responseData)
+    setIsLoading(false)
 
-  };
+  }
   
   const onTest = async (data: FieldValues) => {
-    const formData: TokenFormFields = setTokenFormFields(data);
+    const formData: TokenFormFields = setTokenFormFields(data)
     try {
-      setIsLoading(true);
-      setIsTesting(true);
-      setTestResult(null);
-      setTestError(null);
-      const body:Record<string, any> = {};
+      setIsLoading(true)
+      setIsTesting(true)
+      setTestResult(null)
+      setTestError(null)
+      const body:Record<string, any> = {}
       //add formData to body
       for (const [key, value] of Object.entries(formData)) {
-        body[key] = value;
+        body[key] = value
       }
       //add testVariables to body
-      body['additionalVariables'] = {};
+      body['additionalVariables'] = {}
       for (const variable of testVariables) {
         //if the body already has the key, just skip it
-        if (body['additionalVariables'][Object.keys(variable)[0]] || Object.keys(variable)[0] == '') continue;
+        if (body['additionalVariables'][Object.keys(variable)[0]] || Object.keys(variable)[0] == '') continue
 
         //Otherwise add the key and value to the body
-        body['additionalVariables'][Object.keys(variable)[0]] = Object.values(variable)[0];
+        body['additionalVariables'][Object.keys(variable)[0]] = Object.values(variable)[0]
 
-        body[Object.keys(variable)[0]] = Object.values(variable)[0];
+        body[Object.keys(variable)[0]] = Object.values(variable)[0]
       }
 
       const response = await fetch("/api/v1/tokens/test", {
@@ -214,38 +214,38 @@ export default function TokenForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-      });
-      const result = await response.json();
-      setTestResult(JSON.stringify(result, null, 2));
+      })
+      const result = await response.json()
+      setTestResult(JSON.stringify(result, null, 2))
     } catch (error) {
-      console.error(error);
+      console.error(error)
     } finally {
-      setIsTesting(false);
-      setIsLoading(false);
+      setIsTesting(false)
+      setIsLoading(false)
     }
-  };
+  }
 
   const handleClearForm = () => {
-    form.reset();
-  };
+    form.reset()
+  }
 
   const handleFillForm = (details: Partial<TokenFormFields>) => {
-    form.reset();
-    if(details.name) form.setValue("name", details.name);
-    if(details.description) form.setValue("description", details.description);
-    if(details.endpoint) form.setValue("endpoint", details.endpoint);
-    if(details.request) form.setValue("request", JSON.stringify(JSON.parse(details.request), null, 2));
-    if(details.expectedResponse) form.setValue("expectedResponse", JSON.stringify(JSON.parse(details.expectedResponse), null, 2));
-    if(details.method) form.setValue("method", details.method);
-    if(details.logEnabled) form.setValue("logEnabled", details.logEnabled);
-    if(details.logResponse) form.setValue("logResponse", details.logResponse);
-    if(details.key) form.setValue("key", details.key);
+    form.reset()
+    if(details.name) form.setValue("name", details.name)
+    if(details.description) form.setValue("description", details.description)
+    if(details.endpoint) form.setValue("endpoint", details.endpoint)
+    if(details.request) form.setValue("request", JSON.stringify(JSON.parse(details.request), null, 2))
+    if(details.expectedResponse) form.setValue("expectedResponse", JSON.stringify(JSON.parse(details.expectedResponse), null, 2))
+    if(details.method) form.setValue("method", details.method)
+    if(details.logEnabled) form.setValue("logEnabled", details.logEnabled)
+    if(details.logResponse) form.setValue("logResponse", details.logResponse)
+    if(details.key) form.setValue("key", details.key)
     // @ts-ignore
-    if(details.restrictions) form.setValue("restrictions", details.restrictions); 
-    if(details.authType) form.setValue("authType", details.authType);
-    if(details.aiEnabled) form.setValue("aiEnabled", details.aiEnabled);
-    if(details.openAIKey) form.setValue("openAIKey", details.openAIKey);
-  };
+    if(details.restrictions) form.setValue("restrictions", details.restrictions) 
+    if(details.authType) form.setValue("authType", details.authType)
+    if(details.aiEnabled) form.setValue("aiEnabled", details.aiEnabled)
+    if(details.openAIKey) form.setValue("openAIKey", details.openAIKey)
+  }
 
   return (
     <div>
@@ -485,7 +485,7 @@ export default function TokenForm() {
                     <KeysDropdown onValueChange={field.onChange} addNewKey={addNewKey} />
                   </FormControl>
                   <FormDescription>
-                    (Required if AI Assist is on) Your OpenAI key to use for the AI assist. Add an OpenAI API Key to your account if you don&apos;t have one.
+                    (Required if AI Assist is on) Your OpenAI key to use for the AI assist. Add an OpenAI API Key to your account if you don&apost have one.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -528,5 +528,5 @@ export default function TokenForm() {
     </Card>
 
     </div>
-  );  
+  )  
 }

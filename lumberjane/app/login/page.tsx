@@ -1,16 +1,16 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import SignOutButton from '@/components/client/SignOutButton';
-import LoginForm from '@/components/client/LoginForm';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import SignOutButton from '@/components/client/SignOutButton'
+import LoginForm from '@/components/client/LoginForm'
 
 export default async function LoginPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createServerComponentClient({ cookies })
 
   const {
     data: { session },
   } = await supabase.auth.getSession()
 
-  const user = session?.user;
+  const user = session?.user
   
   if (user) {
     return (
@@ -20,11 +20,11 @@ export default async function LoginPage() {
         </h4>
         <SignOutButton />
       </div>
-    );
+    )
   }
   else {
     return (
       <LoginForm />
-    );
+    )
   }
 }

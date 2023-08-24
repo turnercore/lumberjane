@@ -2,13 +2,14 @@ import {
   Card,
   CardHeader,
   CardContent,
-} from "@/components/ui";
-import type { TokenData } from '@/types';
-import TokenTable from '../components/TokenTable';
-import { fetchDeletedTokens } from '../utils/utils';
+} from "@/components/ui"
+import type { TokenData } from '@/types'
+import TokenTable from '../components/TokenTable'
+import { fetchDeletedTokens } from '../utils/utils'
 
 const DeletedTokensDashboard = async () => {
-  const tokens: TokenData[] | null = await fetchDeletedTokens();
+  const tokenData = await fetchDeletedTokens()
+  const tokens: TokenData[] = tokenData ? tokenData : []
 
   return (
     <Card className="mx-auto max-w-5xl mb-20 p-3 shadow-md">
@@ -19,7 +20,7 @@ const DeletedTokensDashboard = async () => {
         <TokenTable passedTokens={tokens} />
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default DeletedTokensDashboard;
+export default DeletedTokensDashboard

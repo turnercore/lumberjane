@@ -9,67 +9,67 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui';
-import { Button, ScrollArea, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui';
-import { SubmitHandler, UseFormReturn } from 'react-hook-form';
-import type { TestVariable } from './TokenForm';
+} from '@/components/ui'
+import { Button, ScrollArea, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui'
+import { SubmitHandler, UseFormReturn } from 'react-hook-form'
+import type { TestVariable } from './TokenForm'
 
 
 interface TestSheetProps {
   form: UseFormReturn<{
-    name: string;
-    description: string;
-    endpoint: string;
-    request: string;
-    expectedResponse: string;
-    method: string;
-    logEnabled: boolean;
-    logResponse: boolean;
-    key: string;
-    aiEnabled: boolean;
-    openAIKey: string;
-    restrictions: never[];
-    authType: string;
-  }, any, undefined>;
-  onTest: SubmitHandler<any>;
-  isTesting: boolean;
-  testResult: string | null;
-  testVariables: TestVariable[];
-  setTestVariables: (variables: TestVariable[]) => void;
+    name: string
+    description: string
+    endpoint: string
+    request: string
+    expectedResponse: string
+    method: string
+    logEnabled: boolean
+    logResponse: boolean
+    key: string
+    aiEnabled: boolean
+    openAIKey: string
+    restrictions: never[]
+    authType: string
+  }, any, undefined>
+  onTest: SubmitHandler<any>
+  isTesting: boolean
+  testResult: string | null
+  testVariables: TestVariable[]
+  setTestVariables: (variables: TestVariable[]) => void
 }
 
 export default function TestSheet({ form, onTest, isTesting, testResult, testVariables, setTestVariables }: TestSheetProps) {
   const handleAddVariable = () => {
-    const newVariables = [...testVariables, { '' : '' }];
-    setTestVariables(newVariables);
-  };
+    const newVariables = [...testVariables, { '' : '' }]
+    setTestVariables(newVariables)
+  }
   
   const handleDeleteVariable = (index: number) => {
-    const newVariables = [...testVariables];
-    newVariables.splice(index, 1);
-    setTestVariables(newVariables);
-    console.log(testVariables);
-  };
+    const newVariables = [...testVariables]
+    newVariables.splice(index, 1)
+    setTestVariables(newVariables)
+    console.log(testVariables)
+  }
 
   const handleKeyChange = (index: number, key: string) => {
-    const newVariables = [...testVariables];
+    const newVariables = [...testVariables]
     // if the old key had a value copy the value
     if (newVariables[index][Object.keys(newVariables[index])[0]]) {
-      newVariables[index] = { [key]: newVariables[index][Object.keys(newVariables[index])[0]] };
+      newVariables[index] = { [key]: newVariables[index][Object.keys(newVariables[index])[0]] }
     } else {
-      newVariables[index] = { [key]: '' };
+      newVariables[index] = { [key]: '' }
     }
-    setTestVariables(newVariables);
-    console.log(testVariables);
+    setTestVariables(newVariables)
+    console.log(testVariables)
 
-  };
+  }
 
   const handleValueChange = (index: number, value: string) => {
-    const newVariables = [...testVariables];
-    newVariables[index] = { [Object.keys(newVariables[index])[0]]: value };
-    setTestVariables(newVariables);
-    console.log(testVariables);
-  };
+    const newVariables = [...testVariables]
+    newVariables[index] = { [Object.keys(newVariables[index])[0]]: value }
+    setTestVariables(newVariables)
+    console.log(testVariables)
+  }
 
 
   return (
@@ -143,35 +143,35 @@ export default function TestSheet({ form, onTest, isTesting, testResult, testVar
         </SheetFooter>
       </SheetContent>
     </Sheet>
-  );
+  )
 }
 
 
 //Code for the TestVariable component
 
 interface TestVariableProps {
-  index: number;
-  variableKey: string;
-  value: string;
-  onKeyChange: (index: number, key: string) => void;
-  onValueChange: (index: number, value: string) => void;
-  onDelete: (index: number) => void;
+  index: number
+  variableKey: string
+  value: string
+  onKeyChange: (index: number, key: string) => void
+  onValueChange: (index: number, value: string) => void
+  onDelete: (index: number) => void
 }
 
 function TestVariable({ index, variableKey, value, onKeyChange, onValueChange, onDelete }: TestVariableProps) {
   const handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newKey = e.target.value;
-    onKeyChange(index, newKey);
-  };
+    const newKey = e.target.value
+    onKeyChange(index, newKey)
+  }
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    onValueChange(index, newValue);
-  };
+    const newValue = e.target.value
+    onValueChange(index, newValue)
+  }
 
   const handleDelete = () => {
-    onDelete(index);
-  };
+    onDelete(index)
+  }
 
   return (
     <div className="flex items-center space-x-2 mb-2">
@@ -179,5 +179,5 @@ function TestVariable({ index, variableKey, value, onKeyChange, onValueChange, o
       <Input type="text" placeholder="Value" value={value} onChange={handleValueChange} onBlur={handleValueChange} />
       <Button onClick={handleDelete}>Delete</Button>
     </div>
-  );
+  )
 }

@@ -1,62 +1,62 @@
-import React, { useState } from 'react';
-import { Input, DatePickerWithPresets, Button, Label, Select, FormControl, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui";
-import type { RestrictionType, Restriction, ExpirationRestriction, HeaderRestriction, IpRestriction, TimeRestriction } from '@/types';
+import React, { useState } from 'react'
+import { Input, DatePickerWithPresets, Button, Label, Select, FormControl, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui"
+import type { RestrictionType, Restriction, ExpirationRestriction, HeaderRestriction, IpRestriction, TimeRestriction } from '@/types'
 
 // TODO: Refactor into a dropdown instead of a select list, right now the select list displays the last selected item
 // To fix this we need to use a dropdown instead of a select list, but it is functional.
 
 
 type RestrictionsDropdownProps = {
-  onValueChange: (value: Restriction[]) => void;
-};
+  onValueChange: (value: Restriction[]) => void
+}
 
 type RestrictionInputProps = {
-  type: RestrictionType;
-  rule: HeaderRestriction['rule'] | IpRestriction['rule'] | TimeRestriction['rule'] | ExpirationRestriction['rule'];
-  updateData: (data: any) => void;
-  remove: () => void;
-};
+  type: RestrictionType
+  rule: HeaderRestriction['rule'] | IpRestriction['rule'] | TimeRestriction['rule'] | ExpirationRestriction['rule']
+  updateData: (data: any) => void
+  remove: () => void
+}
 
 export default function RestrictionsDropdown({ onValueChange }: RestrictionsDropdownProps) {
-  const [restrictions, setRestrictions] = useState<Restriction[]>([]);
-  const [selectedValue, setSelectedValue] = useState<RestrictionType | undefined>(undefined);
+  const [restrictions, setRestrictions] = useState<Restriction[]>([])
+  const [selectedValue, setSelectedValue] = useState<RestrictionType | undefined>(undefined)
 
 
   const addRestriction = (type: RestrictionType) => {
-    let newRestriction: Restriction;
+    let newRestriction: Restriction
   
     switch (type) {
       case 'headerTags':
-        newRestriction = { type, rule: { tag: '', value: '' } };
-        break;
+        newRestriction = { type, rule: { tag: '', value: '' } }
+        break
       case 'ipAddresses':
-        newRestriction = { type, rule: { ipRange: '' } };
-        break;
+        newRestriction = { type, rule: { ipRange: '' } }
+        break
       case 'timeOfDay':
-        newRestriction = { type, rule: { start: '', end: '' } };
-        break;
+        newRestriction = { type, rule: { start: '', end: '' } }
+        break
       case 'expirationDate':
-        newRestriction = { type, rule: { date: new Date() } };
-        break;
+        newRestriction = { type, rule: { date: new Date() } }
+        break
     }
   
-    setRestrictions([...restrictions, newRestriction]);
-    setSelectedValue(undefined); // Reset the selected value
-  };
+    setRestrictions([...restrictions, newRestriction])
+    setSelectedValue(undefined) // Reset the selected value
+  }
 
   const updateRestrictionData = (index: number, rule: any) => {
-    const updatedRestrictions = [...restrictions];
-    updatedRestrictions[index].rule = rule; // Update the rule with the new data
-    setRestrictions(updatedRestrictions);
-    onValueChange(updatedRestrictions);
-  };  
+    const updatedRestrictions = [...restrictions]
+    updatedRestrictions[index].rule = rule // Update the rule with the new data
+    setRestrictions(updatedRestrictions)
+    onValueChange(updatedRestrictions)
+  }  
 
   const removeRestriction = (index: number) => {
-    const updatedRestrictions = [...restrictions];
-    updatedRestrictions.splice(index, 1);
-    setRestrictions(updatedRestrictions);
-    onValueChange(updatedRestrictions);
-  };
+    const updatedRestrictions = [...restrictions]
+    updatedRestrictions.splice(index, 1)
+    setRestrictions(updatedRestrictions)
+    onValueChange(updatedRestrictions)
+  }
 
   return (
     <div className='space-y-4'>
@@ -76,8 +76,8 @@ export default function RestrictionsDropdown({ onValueChange }: RestrictionsDrop
           key={selectedValue}
           value={selectedValue} // Use the selectedValue state variable
           onValueChange={(value) => {
-            setSelectedValue(value as RestrictionType); // Update the selected value when it changes
-            addRestriction(value as RestrictionType);
+            setSelectedValue(value as RestrictionType) // Update the selected value when it changes
+            addRestriction(value as RestrictionType)
           }}
         >
           <FormControl>
@@ -97,13 +97,13 @@ export default function RestrictionsDropdown({ onValueChange }: RestrictionsDrop
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }
 
 function RestrictionInput({ type, rule, updateData, remove }: RestrictionInputProps) {
   switch (type) {
     case 'headerTags':
-      rule = rule as HeaderRestriction['rule'];
+      rule = rule as HeaderRestriction['rule']
       return (
         <div className="flex items-center space-x-2">
           <Label>Header:</Label>
@@ -124,9 +124,9 @@ function RestrictionInput({ type, rule, updateData, remove }: RestrictionInputPr
           />
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
-      );
+      )
     case 'ipAddresses':
-      rule = rule as IpRestriction['rule'];
+      rule = rule as IpRestriction['rule']
       return (
         <div className="flex items-center space-x-2">
           <Label>IP Address Range (CIDR):</Label>
@@ -139,9 +139,9 @@ function RestrictionInput({ type, rule, updateData, remove }: RestrictionInputPr
           />
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
-      );
+      )
     case 'timeOfDay':
-      rule = rule as TimeRestriction['rule'];
+      rule = rule as TimeRestriction['rule']
       return (
         <div className="flex items-center space-x-2">
           <Label>Usage Restricted During:</Label>
@@ -163,11 +163,11 @@ function RestrictionInput({ type, rule, updateData, remove }: RestrictionInputPr
           </div>
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
-      );
+      )
     case 'expirationDate':
-      rule = rule as ExpirationRestriction['rule'];
+      rule = rule as ExpirationRestriction['rule']
       if (!rule.expirationDate) {
-        rule.expirationDate = new Date();
+        rule.expirationDate = new Date()
         console.log("Something is going on setting the date...")
       }
       return (
@@ -179,8 +179,8 @@ function RestrictionInput({ type, rule, updateData, remove }: RestrictionInputPr
           />
           <Button variant='destructive' onClick={remove}>-</Button>
         </div>
-      );
+      )
     default:
-      return null;
+      return null
   }
 }

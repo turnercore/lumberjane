@@ -1,17 +1,17 @@
-import jwt from 'jsonwebtoken';
-import { Token, TokenFormFields } from '@/types';
-import crypto, { UUID } from 'crypto';
-import { User } from '@supabase/auth-helpers-nextjs';
+import jwt from 'jsonwebtoken'
+import { Token, TokenFormFields } from '@/types'
+import crypto, { UUID } from 'crypto'
+import { User } from '@supabase/auth-helpers-nextjs'
 
-const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this';
+const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this'
 
 interface TokenResult {
-  tokenData: Token;
-  token: string;
+  tokenData: Token
+  token: string
 }
 export default async function createToken(user: User, requestBody: TokenFormFields): Promise<TokenResult> {
   // Create UUID for record
-  const id = crypto.randomUUID();
+  const id = crypto.randomUUID()
 
   const tokenData: Token = {
     info: {
@@ -37,15 +37,15 @@ export default async function createToken(user: User, requestBody: TokenFormFiel
       log_level: requestBody.logLevel || 'info',
       log_response: requestBody.logResponse || false,
     }
-  };
+  }
 
   if(tokenData.info.authType === 'none') {
-    tokenData.info.auth = undefined;
-    tokenData.info.key = undefined;
+    tokenData.info.auth = undefined
+    tokenData.info.key = undefined
   }
 
   // Create the JWT token
-  const token = jwt.sign(tokenData, tokenSecret);
+  const token = jwt.sign(tokenData, tokenSecret)
 
-  return {tokenData, token};
+  return {tokenData, token}
 }
