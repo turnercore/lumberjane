@@ -44,7 +44,7 @@ export default async function NavBar() {
           </Link>
         </NavigationMenuItem>
         )}
-        
+
         {process.env.DISABLE_DOCS !== "true" && (
         <NavigationMenuItem>
           <Link href="/docs" legacyBehavior passHref>
@@ -55,7 +55,7 @@ export default async function NavBar() {
         </NavigationMenuItem>
         )}
 
-        {process.env.COMMERCIAL && (
+        {process.env.DISABLE_COMMERCIAL !== "true" && (
           <NavigationMenuItem>
             <Link href="/pricing" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle}>
