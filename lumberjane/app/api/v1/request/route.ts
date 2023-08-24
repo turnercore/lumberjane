@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { makeApiRequest, prepareRequest, validateToken, processResponse, logRequest } from './utils';
 
+export const dynamic = 'force-dynamic'
+
+
 export async function POST(req: NextRequest) {
   try {
     const requestBody = JSON.parse(await req.text());

@@ -4,6 +4,9 @@ import { cookies } from 'next/headers';
 import createJwtToken from '../../../../utils/createToken';
 import type { TokenFormFields } from '@/types';
 
+export const dynamic = 'force-dynamic'
+
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = createRouteHandlerClient({ cookies });

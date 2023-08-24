@@ -3,6 +3,9 @@ import { cookies } from 'next/headers'
 import SignOutButton from '@/components/client/SignOutButton'
 import LoginForm from '@/components/client/LoginForm'
 
+export const dynamic = 'force-dynamic'
+
+
 export default async function LoginPage() {
   const supabase = createServerComponentClient({ cookies })
 

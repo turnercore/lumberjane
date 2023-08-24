@@ -6,6 +6,9 @@ import { cookies } from 'next/headers';
 import type { Key } from '@/types';
 import { encrypt } from '@/utils/crypto';
 
+export const dynamic = 'force-dynamic'
+
+
 export async function POST(req: NextRequest) {
     try {
         console.log('!!!!!!adding a key to supabase!!!!!');

@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import type { KeyId } from '@/types';
 
+export const dynamic = 'force-dynamic'
+
+
 export async function DELETE(req: NextRequest) {
     try {
         const supabase = createRouteHandlerClient({cookies});

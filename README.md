@@ -35,3 +35,7 @@ Things that need to be configured with supabase:
 Bugs: 
 Known issue with static page generation and cookies:
 https://github.com/vercel/next.js/issues/49373
+
+
+Todo/Bugs/Etc:
+https://tree.taiga.io/project/turnercore-lumberjane/timeline
