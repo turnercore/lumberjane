@@ -1,5 +1,5 @@
 import { StandardResponse } from "@/types";
-import { UUID } from "crypto";
+import type { UUID } from "crypto";
 import { fetchAndDecryptKey, openAiAssist } from "./";
 import { matchJSONtoSchema } from "@/utils/utils";
 

@@ -1,6 +1,6 @@
 // User from supabase: Email	Phone	Provider	Created	Last Sign In	User UID	
 
-import { UUID } from "crypto";
+import type { UUID } from "crypto";
 
 export type UUID = UUID;
 

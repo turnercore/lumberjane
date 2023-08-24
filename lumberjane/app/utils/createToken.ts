@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { Token, TokenFormFields } from '@/types'
-import crypto, { UUID } from 'crypto'
+import type { UUID } from 'crypto'
 import { User } from '@supabase/auth-helpers-nextjs'
+import { v4 as uuidv4 } from 'uuid'
 
 const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this'
 
@@ -11,7 +12,7 @@ interface TokenResult {
 }
 export default async function createToken(user: User, requestBody: TokenFormFields): Promise<TokenResult> {
   // Create UUID for record
-  const id = crypto.randomUUID()
+  const id = uuidv4() as UUID
 
   const tokenData: Token = {
     info: {

@@ -1,15 +1,23 @@
 import '@/globals.css'
+import 'react-toastify/dist/ReactToastify.css'
 import type { Metadata } from 'next'
 import Header from './components/server/Header'
-import 'react-toastify/dist/ReactToastify.css'
 import Toast from '@/components/client/Toast'
 import Footer from './components/server/Footer'
 import { ThemeProvider } from "@/components/ui/theme-provider"
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs' // 'nodejs' (default) | 'edge'
 
-const metadata: Metadata = {
+const url = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+export const metadata: Metadata = {
   title: 'Lumberjane',
   description: 'Store, log, and control your API access.',
+  applicationName: 'Lumberjane',
+  authors: [{ name: 'Turner Monroe', url: 'https://github.com/turnercore'}],
+  creator: 'Turner Monroe',
+  keywords: ['api', 'keys', 'lumberjane', 'gamejam'],
 }
 
 export default function RootLayout({
