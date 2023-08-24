@@ -15,45 +15,26 @@ import { useEffect, useState } from "react";
 import { Profile } from "@/types";
 
 export default function UserAvatar() {
-  const supabase = createClientComponentClient();
   const [user, setUser] = useState< User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [avatarFallback, setAvatarFallback] = useState<string>("🪵");
   const [isHovered, setIsHovered] = useState(false);
 
-  const getSupabaseUser = async () => {
-    try {
-      const { data } = await supabase.auth.getSession();
-      if (!data) return null;
-      if (!data.session) return null;
-      if (!data.session.user) return null;
-      setUser(data.session.user);
-    } catch (error: any) {
-      console.error(error.message);
-    }
-  }
-
-  const fetchProfile = async () => {
-    try {
-      if(!user) return;
-      const { data: fetchedProfile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-  
-      setAvatarFallback(fetchedProfile.username
-      ? fetchedProfile.username[0].toUpperCase()
-      : "LJ");
-  
-      setProfile(fetchedProfile);
-    } catch(error: any) {
-      console.error(error.message);
-    }
-  }
-
   //Get user on mount
   useEffect(() => {
+    const getSupabaseUser = async () => {
+      try {
+        const supabase = createClientComponentClient();
+        const { data } = await supabase.auth.getSession();
+        if (!data) return null;
+        if (!data.session) return null;
+        if (!data.session.user) return null;
+        setUser(data.session.user);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    };
+
     getSupabaseUser();
   }, []);
 
@@ -61,6 +42,25 @@ export default function UserAvatar() {
   useEffect(() => {
     if (!user) return;
       // Fetch the user's profile
+      const fetchProfile = async () => {
+        try {
+          if(!user) return;
+          const supabase = createClientComponentClient();
+          const { data: fetchedProfile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+      
+          setAvatarFallback(fetchedProfile.username
+          ? fetchedProfile.username[0].toUpperCase()
+          : "LJ");
+      
+          setProfile(fetchedProfile);
+        } catch(error: any) {
+          console.error(error.message);
+        }
+      };
       fetchProfile();
   }, [user]);
 

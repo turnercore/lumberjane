@@ -87,7 +87,7 @@ const tokenSchema = z.object({
 
 export type TestVariable = Record<string, string>;
 
-export default function tokenForm() {
+export default function TokenForm() {
   //TODO: Let this be controlled by the user's settings
   let isDebugEnabled = false;
 
@@ -485,7 +485,7 @@ export default function tokenForm() {
                     <KeysDropdown onValueChange={field.onChange} addNewKey={addNewKey} />
                   </FormControl>
                   <FormDescription>
-                    (Required if AI Assist is on) Your OpenAI key to use for the AI assist. Add an OpenAI API Key to your account if you don't have one.
+                    (Required if AI Assist is on) Your OpenAI key to use for the AI assist. Add an OpenAI API Key to your account if you don&apos;t have one.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

@@ -4,4 +4,5 @@ const nextConfig = {
         domains: ['*.supabase.co'],
     },
   };
-module.exports = nextConfig
+  
+export default nextConfig

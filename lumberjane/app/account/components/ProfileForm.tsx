@@ -94,10 +94,9 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
         {Object.keys(formProfile)
           .filter((key) => !omitFields.includes(key))
           .map((key) => (
-            <div>
+            <div key={key}>
               <Label htmlFor={key}>{key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}</Label>
               <Input
-                key={key}
                 id={key}
                 placeholder={key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())} // Turn _ into spaces and capitalize the first letter
                 value={formProfile[key as keyof UserProfile] || ''}
