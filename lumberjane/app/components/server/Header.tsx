@@ -1,11 +1,11 @@
-import Logo from "./Logo";
-import UserAvatar from "../client/UserAvatar";
-import NavBar from "./NavBar";
-import { ModeToggle } from "../ui";
+import Logo from "./Logo"
+import UserAvatar from "../client/UserAvatar"
+import NavBar from "./NavBar"
+import { ModeToggle } from "../ui"
 
 type HeaderProps = {
-  isDark: boolean;
-};
+  isDark: boolean
+}
 
 
 export default function Header( {isDark}: HeaderProps) {

@@ -1,5 +1,5 @@
-'use client';
-import React, { useEffect } from 'react';
+'use client'
+import React, { useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -20,17 +20,17 @@ import {
   Input,
   Label,
   FormLabel,
-} from '@/components/ui';
-import { Key } from '@/types';
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { FieldValues, useForm } from "react-hook-form";
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+} from '@/components/ui'
+import { Key } from '@/types'
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { FieldValues, useForm } from "react-hook-form"
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
 
 type KeyAddDialogProps = {
-  onAddKey?: (key: Key) => void;
-  children: React.ReactNode;
-};
+  onAddKey?: (key: Key) => void
+  children: React.ReactNode
+}
 
 const KeySchema = z
   .object({
@@ -47,16 +47,16 @@ const KeySchema = z
         code: z.ZodIssueCode.custom,
         message: 'Password is required when isSecret is true',
         path: ['password'],
-      });
+      })
     }
     if (!uuidValidate(obj.id)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Invalid UUID',
         path: ['id'],
-      });
+      })
     }
-  });
+  })
 
 const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
 
@@ -72,12 +72,12 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
       password: '',
     },
 
-  });
+  })
 
   //On mount set a random uuid for the key id
   useEffect(() => {
-    form.setValue('id', uuidv4());
-  }, [form]);
+    form.setValue('id', uuidv4())
+  }, [form])
 
   const onSubmit = (data: FieldValues) => {
     fetch('/api/v1/keys/create', {
@@ -91,14 +91,14 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
       .then((data) => {
         if (data.success) {
           // Add key to state
-          if (onAddKey) onAddKey(data.key);
+          if (onAddKey) onAddKey(data.key)
         } else {
-          console.log('Error creating key!');
+          console.log('Error creating key!')
         }
       })
       .catch((error: any) => {
-        console.log('Error creating key!');
-      });
+        console.log('Error creating key!')
+      })
     
     
     // Update parent
@@ -110,13 +110,13 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
       isSecret: data.isSecret
     }
 
-    if (onAddKey) onAddKey(key);
+    if (onAddKey) onAddKey(key)
     //If no onAddKey, refresh page to make sure the new key is in the list
-    else window.location.reload();
+    else window.location.reload()
 
-    form.reset();
+    form.reset()
     // Get a new uuid for the next key
-    form.setValue('id', uuidv4());
+    form.setValue('id', uuidv4())
   }
 
   return (
@@ -204,7 +204,7 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
                   <FormDescription>
                     <h4>Extra password used to double-encrypt the key.</h4>
                     <p className="font-bold text-red-500"> WARNING: If you lose this password the key will be unrecoverable.</p>
-                    <p>You must include this password as a &apos;token_password&apos; field in your request with ANY TOKEN made with this key.</p>
+                    <p>You must include this password as a &apostoken_password&apos field in your request with ANY TOKEN made with this key.</p>
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -220,7 +220,7 @@ const KeyAddDialog = ({ onAddKey, children }: KeyAddDialogProps) => {
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 export default KeyAddDialog

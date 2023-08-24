@@ -1,10 +1,10 @@
 import '@/globals.css'
 import type { Metadata } from 'next'
-import Header from './components/server/Header';
-import 'react-toastify/dist/ReactToastify.css';
-import Toast from '@/components/client/Toast';
-import Footer from './components/server/Footer';
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import Header from './components/server/Header'
+import 'react-toastify/dist/ReactToastify.css'
+import Toast from '@/components/client/Toast'
+import Footer from './components/server/Footer'
+import { ThemeProvider } from "@/components/ui/theme-provider"
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
-  const isDark = false;
+  const isDark = false
 
   return (
     <html lang="en">

@@ -1,77 +1,77 @@
-'use client';
-import { useState } from 'react';
-import { Separator, Avatar, AvatarImage, AvatarFallback, Input, Button, Label, Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from '@/components/ui';
-import SignOutButton from '@/components/client/SignOutButton';
-import type { User } from '@supabase/auth-helpers-nextjs';
-import { toast } from 'react-toastify';
-import type { UserProfile } from '@/types';
-import { ProfilePictureUploadButton } from './ProfilePictureUploadButton';
+'use client'
+import { useState } from 'react'
+import { Separator, Avatar, AvatarImage, AvatarFallback, Input, Button, Label, Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from '@/components/ui'
+import SignOutButton from '@/components/client/SignOutButton'
+import type { User } from '@supabase/auth-helpers-nextjs'
+import { toast } from 'react-toastify'
+import type { UserProfile } from '@/types'
+import { ProfilePictureUploadButton } from './ProfilePictureUploadButton'
 
 //TODO: This should be refactored into a form and validated with zod. See the dashboard for an example
 
 // Fields that we don't want the user to be able to update directly should go here
-const omitFields = ['id', 'updated_at', 'avatar_url', 'user_id'];
+const omitFields = ['id', 'updated_at', 'avatar_url', 'user_id']
 
 type ProfileFormProps = {
-  profile: UserProfile;
-  user: User;
-};
+  profile: UserProfile
+  user: User
+}
 
 const ProfileForm = ({ profile, user }: ProfileFormProps) => {
-  const [formProfile, setFormProfile] = useState<UserProfile>(profile);
-  const [profileDataChanged, setProfileDataChanged] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [profileImageUrl, setProfileImageUrl] = useState<string>(profile.avatar_url || '');
+  const [formProfile, setFormProfile] = useState<UserProfile>(profile)
+  const [profileDataChanged, setProfileDataChanged] = useState<boolean>(false)
+  const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [profileImageUrl, setProfileImageUrl] = useState<string>(profile.avatar_url || '')
 
   const handleChange = (field: keyof UserProfile, value: any) => {
-    setProfileDataChanged(true);
-    setFormProfile({ ...formProfile, [field]: value });
-  };
+    setProfileDataChanged(true)
+    setFormProfile({ ...formProfile, [field]: value })
+  }
 
   const handlePasswordChange = (e: any) => {
-    setPassword(e.target.value);
+    setPassword(e.target.value)
   }
 
   const handleConfirmPasswordChange = (e: any) => {
-    setConfirmPassword(e.target.value);
-    if(e.target.value === password) setProfileDataChanged(true);
+    setConfirmPassword(e.target.value)
+    if(e.target.value === password) setProfileDataChanged(true)
   }
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       if (password !== confirmPassword) {
-        toast.error('Passwords do not match!');
-        return;
+        toast.error('Passwords do not match!')
+        return
       }
       if (!profileDataChanged) {
-        toast.error('No changes to update!');
-        return;
+        toast.error('No changes to update!')
+        return
       }
       if (password && password.length < 8) {
-        toast.error('Password must be at least 8 characters!');
-        return;
+        toast.error('Password must be at least 8 characters!')
+        return
       }
-      const payload = { ...formProfile, password };
+      const payload = { ...formProfile, password }
       const response = await fetch('http://localhost:3000/api/v1/profiles/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.error) {
-        throw new Error(data.error);
+        throw new Error(data.error)
       }
 
-      toast.success('Profile updated!');
-      setProfileDataChanged(false);
+      toast.success('Profile updated!')
+      setProfileDataChanged(false)
     } catch (error: any) {
-      toast.error(`Error updating the data: ${error.message}`);
+      toast.error(`Error updating the data: ${error.message}`)
     }
-  };
+  }
 
   return (
 
@@ -100,7 +100,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
                 id={key}
                 placeholder={key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())} // Turn _ into spaces and capitalize the first letter
                 value={formProfile[key as keyof UserProfile] || ''}
-                onChange={(e: { target: { value: any; }; }) => handleChange(key as keyof UserProfile, e.target.value)}
+                onChange={(e: { target: { value: any } }) => handleChange(key as keyof UserProfile, e.target.value)}
                 className="w-full"
               />
             </div>
@@ -127,7 +127,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
   </Card>
 
     
-  );
-};
+  )
+}
 
-export default ProfileForm;
+export default ProfileForm

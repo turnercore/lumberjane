@@ -87,7 +87,6 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
                 </div>
               </DialogContent>
             </Dialog>
-
             </div>
           </div>
         ))}

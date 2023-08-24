@@ -1,20 +1,20 @@
-'use client';
-import { useState } from "react";
-import { Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, ScrollArea, ScrollBar } from "@/components/ui";
-import type { UseFormReturn } from 'react-hook-form';
+'use client'
+import { useState } from "react"
+import { Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, ScrollArea, ScrollBar } from "@/components/ui"
+import type { UseFormReturn } from 'react-hook-form'
 
 type Props = {
-  form: UseFormReturn<any>;
-};
+  form: UseFormReturn<any>
+}
 
 function PrintFormValues({ form }: Props) {
-  const [formVariables, setFormVariables] = useState("");
+  const [formVariables, setFormVariables] = useState("")
 
   const handleOpenChange = (open: boolean) => {
     if (open) {
-      setFormVariables(JSON.stringify(form.getValues(), null, 2));
+      setFormVariables(JSON.stringify(form.getValues(), null, 2))
     }
-  };
+  }
 
   return (
     <>
@@ -42,7 +42,7 @@ function PrintFormValues({ form }: Props) {
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }
 
-export default PrintFormValues;
+export default PrintFormValues

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const Footer = () => {
@@ -21,7 +22,7 @@ const Footer = () => {
         )}
         <div className="flex justify-center items-center vibrating-element">
           <Link href="https://github.com/turnercore/lumberjane">
-            <img src="/img/github-mark/github-mark-white.svg" alt="GitHub" className="h-6 w-6 ml-2" />
+            <Image src="/img/github-mark/github-mark-white.svg" alt="GitHub" className="h-6 w-6 ml-2" />
           </Link>
         </div>
       </div>

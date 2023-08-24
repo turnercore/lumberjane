@@ -1,9 +1,9 @@
 "use client"
-import { useTheme } from 'next-themes';
+import { useTheme } from 'next-themes'
 import { ToastContainer } from 'react-toastify'
 
 const Toast = () => {
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme } = useTheme()
 
     return (<ToastContainer
     position="bottom-center"
@@ -18,4 +18,4 @@ const Toast = () => {
     />)
 }
 
-export default Toast;
+export default Toast

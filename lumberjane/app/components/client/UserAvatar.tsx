@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Avatar,
   AvatarImage,
@@ -7,62 +7,62 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui";
-import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import Link from "next/link";
-import SignOutButton from "./SignOutButton";
-import { useEffect, useState } from "react";
-import { Profile } from "@/types";
+} from "@/components/ui"
+import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import Link from "next/link"
+import SignOutButton from "./SignOutButton"
+import { useEffect, useState } from "react"
+import { Profile } from "@/types"
 
 export default function UserAvatar() {
-  const [user, setUser] = useState< User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [avatarFallback, setAvatarFallback] = useState<string>("🪵");
-  const [isHovered, setIsHovered] = useState(false);
+  const [user, setUser] = useState< User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [avatarFallback, setAvatarFallback] = useState<string>("🪵")
+  const [isHovered, setIsHovered] = useState(false)
 
   //Get user on mount
   useEffect(() => {
     const getSupabaseUser = async () => {
       try {
-        const supabase = createClientComponentClient();
-        const { data } = await supabase.auth.getSession();
-        if (!data) return null;
-        if (!data.session) return null;
-        if (!data.session.user) return null;
-        setUser(data.session.user);
+        const supabase = createClientComponentClient()
+        const { data } = await supabase.auth.getSession()
+        if (!data) return null
+        if (!data.session) return null
+        if (!data.session.user) return null
+        setUser(data.session.user)
       } catch (error: any) {
-        console.error(error.message);
+        console.error(error.message)
       }
-    };
+    }
 
-    getSupabaseUser();
-  }, []);
+    getSupabaseUser()
+  }, [])
 
   //When user changes, get the user's profile from supabase
   useEffect(() => {
-    if (!user) return;
+    if (!user) return
       // Fetch the user's profile
       const fetchProfile = async () => {
         try {
-          if(!user) return;
-          const supabase = createClientComponentClient();
+          if(!user) return
+          const supabase = createClientComponentClient()
           const { data: fetchedProfile } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
-          .single();
+          .single()
       
           setAvatarFallback(fetchedProfile.username
           ? fetchedProfile.username[0].toUpperCase()
-          : "LJ");
+          : "LJ")
       
-          setProfile(fetchedProfile);
+          setProfile(fetchedProfile)
         } catch(error: any) {
-          console.error(error.message);
+          console.error(error.message)
         }
-      };
-      fetchProfile();
-  }, [user]);
+      }
+      fetchProfile()
+  }, [user])
 
 
   const notLoggedInHtml = (
@@ -71,10 +71,10 @@ export default function UserAvatar() {
         <AvatarFallback>?</AvatarFallback>
       </Avatar>
     </Link>
-  );
+  )
 
-  if (!user) return notLoggedInHtml;
-  if (!profile) return notLoggedInHtml;
+  if (!user) return notLoggedInHtml
+  if (!profile) return notLoggedInHtml
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -103,5 +103,5 @@ export default function UserAvatar() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

@@ -11,9 +11,9 @@ import {
   CommandInput,
   CommandItem,
   Button,} from "@/components/ui"
-import { useEffect, useState } from "react";
-import { ChevronsUpDown } from "lucide-react";
-import KeyAddDialog from "@/components/client/KeyAddDialog";
+import { useEffect, useState } from "react"
+import { ChevronsUpDown } from "lucide-react"
+import KeyAddDialog from "@/components/client/KeyAddDialog"
 
 //This component is a shadcn dropdown menu that displays the user's keys. Each key will be displayed by it's name
 //and when hovered will display the description as a tooltip. When clicked the 'selectKey' callback will be execute
@@ -23,7 +23,7 @@ import KeyAddDialog from "@/components/client/KeyAddDialog";
 type KeyDropdownProps = {
   onValueChange(value: string): void
   addNewKey: () => void
-};
+}
 
 type DropdownKey = {
   id: KeyId
@@ -114,9 +114,9 @@ export default function KeyDropdown({ onValueChange, addNewKey } : KeyDropdownPr
                 key={key.id}
                 value={key.name}
                 onSelect={() => {
-                  setPickedKey(key);
-                  setOpen(false);
-                  onValueChange(key.id);
+                  setPickedKey(key)
+                  setOpen(false)
+                  onValueChange(key.id)
                 }}
               >
                 {key.name}
