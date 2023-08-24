@@ -22,7 +22,7 @@ const Footer = () => {
         )}
         <div className="flex justify-center items-center vibrating-element">
           <Link href="https://github.com/turnercore/lumberjane">
-            <Image src="/img/github-mark/github-mark-white.svg" alt="GitHub" className="h-6 w-6 ml-2" />
+            <Image src="/img/github-mark/github-mark-white.svg" alt="GitHub" width="98" height="96" className="h-6 w-6 ml-2" />
           </Link>
         </div>
       </div>
