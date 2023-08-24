@@ -21,7 +21,6 @@ export default function UserAvatar() {
   const [avatarFallback, setAvatarFallback] = useState<string>("🪵");
   const [isHovered, setIsHovered] = useState(false);
 
-
   const getSupabaseUser = async () => {
     try {
       const { data } = await supabase.auth.getSession();
@@ -90,16 +89,16 @@ export default function UserAvatar() {
       
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <Link href="/dashboard">
-          <DropdownMenuItem>Dashboard</DropdownMenuItem>
+        <Link href="/tokens">
+          <DropdownMenuItem>Tokens</DropdownMenuItem>
         </Link>
         <Link href="/keys">
           <DropdownMenuItem>Keys</DropdownMenuItem>
         </Link>
         <Link href="/account">
-          <DropdownMenuItem>Account</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
         </Link>
-        <DropdownMenuItem>
+        <DropdownMenuItem className = 'justify-center items-center'>
           <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>

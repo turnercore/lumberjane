@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Avatar, AvatarImage, AvatarFallback, Input, Button, Label, Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from '@/components/ui';
+import { Separator, Avatar, AvatarImage, AvatarFallback, Input, Button, Label, Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from '@/components/ui';
 import SignOutButton from '@/components/client/SignOutButton';
 import type { User } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
@@ -75,7 +75,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
 
     <Card className="mx-auto max-w-sm shadow-md">
     <CardHeader className="justify-center text-center">
-      <CardTitle>Lumberjane Profile</CardTitle>
+      <CardTitle>{user.email}</CardTitle>
       <CardDescription>Update your profile</CardDescription>
     </CardHeader>
     <CardContent>
@@ -84,8 +84,6 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
           <AvatarImage className="object-cover object-center" src={formProfile.avatar_url?.toString()} />
           <AvatarFallback>{profile.username ? profile.username?.charAt(0) : '🪵'}</AvatarFallback>
         </Avatar>
-        <h4 className="text-lg text-center">{user.email}</h4>
-
         {Object.keys(formProfile)
           .filter((key) => !omitFields.includes(key))
           .map((key) => (
@@ -105,6 +103,7 @@ const ProfileForm = ({ profile, user }: ProfileFormProps) => {
             <Label htmlFor='email' className='justify-evenly'>Email</Label>
             <Input type='email' id='email' value={user.email} className="w-full" disabled />
           </div>
+          <Separator className='my-4'/>
           <div>
             <Label htmlFor='password' className='justify-evenly' >New Password</Label>
             <Input type='password' id='password' placeholder='********' className="w-full" onBlur={handlePasswordChange}/>

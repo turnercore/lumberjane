@@ -117,6 +117,7 @@ import {  Table,
   TableRow,
   TableCell,
   TableCaption,} from './table';
+import { Separator } from './separator';
 
 
 export {
@@ -242,4 +243,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  Separator,
 };
