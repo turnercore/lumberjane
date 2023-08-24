@@ -76,7 +76,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
               </DialogTrigger>
               <DialogContent className='text-center'>
                 <DialogHeader className='text-center'>
-                  <h1 className="text-lg font-bold text-center">Delete Key "{key?.name?.toUpperCase()}"</h1>
+                  <h1 className="text-lg font-bold text-center">Delete Key &ldquo;{key?.name?.toUpperCase()}&rdquo;</h1>
                 </DialogHeader>
                 <h2>Are you sure you want to delete this key?</h2>
                 <div className='flex justify-center space-x-2'>
