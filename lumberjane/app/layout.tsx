@@ -6,7 +6,7 @@ import Toast from '@/components/client/Toast'
 import Footer from './components/server/Footer'
 import { ThemeProvider } from "@/components/ui/theme-provider"
 
-// const inter = Inter({ subsets: ['latin'] })
+export const dynamic = 'force-dynamic' // temporary fix for the dynamic issues with the server routes using cookies
 
 const metadata: Metadata = {
   title: 'Lumberjane',
