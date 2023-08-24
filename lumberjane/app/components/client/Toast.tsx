@@ -1,7 +1,10 @@
 "use client"
+import { useTheme } from 'next-themes';
 import { ToastContainer } from 'react-toastify'
 
-const Toast = (isDark: boolean = false) => {
+const Toast = () => {
+    const { theme, setTheme } = useTheme();
+
     return (<ToastContainer
     position="bottom-center"
     autoClose={5000}
@@ -11,7 +14,7 @@ const Toast = (isDark: boolean = false) => {
     pauseOnFocusLoss
     draggable
     pauseOnHover
-    theme={isDark ? 'dark' : 'light'}
+    theme={theme === "dark" ? "dark" : "light"}
     />)
 }
 

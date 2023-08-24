@@ -79,7 +79,7 @@ export default function UserAvatar() {
     <DropdownMenu>
       <DropdownMenuTrigger>
       <Avatar
-        className="w-14 h-14 cursor-pointer bg-primary hover-floating-element transition-all duration-300 hover:shadow-lg hover">
+        className="w-14 h-14 cursor-pointer bg-primary transition-all duration-300 hover:shadow-lg hover">
         <AvatarImage
           className="w-full h-full object-cover object-center"
           src={profile.avatar_url}

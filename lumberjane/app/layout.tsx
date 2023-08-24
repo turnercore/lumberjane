@@ -4,7 +4,7 @@ import Header from './components/server/Header';
 import 'react-toastify/dist/ReactToastify.css';
 import Toast from '@/components/client/Toast';
 import Footer from './components/server/Footer';
-
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -23,12 +23,16 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-        <body className="flex flex-col min-h-screen">
-          <Toast isDark={isDark} />
-          <Header isDark={isDark}/>
-          <div className="flex-1 mt-3">{children}</div>
-          <div className="background"></div>
-          <Footer />
+        <body>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="flex flex-col min-h-screen">
+              <Toast />
+              <Header isDark={isDark}/>
+              <div className="flex-1 mt-3 mb-3">{children}</div>
+              <div className="background"></div>
+              <Footer />
+            </div>
+          </ThemeProvider>
         </body>
     </html>
     )
