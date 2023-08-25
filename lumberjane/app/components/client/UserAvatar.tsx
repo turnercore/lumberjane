@@ -13,11 +13,11 @@ import Link from "next/link"
 import SignOutButton from "./SignOutButton"
 import { useEffect, useState } from "react"
 import { Profile } from "@/types"
+import { GiAxeInStump, GiSkeletonInside } from "react-icons/gi"
 
 export default function UserAvatar() {
   const [user, setUser] = useState< User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [avatarFallback, setAvatarFallback] = useState<string>("🪵")
   const [isHovered, setIsHovered] = useState(false)
 
   //Get user on mount
@@ -52,10 +52,6 @@ export default function UserAvatar() {
           .eq("id", user.id)
           .single()
       
-          setAvatarFallback(fetchedProfile.username
-          ? fetchedProfile.username[0].toUpperCase()
-          : "LJ")
-      
           setProfile(fetchedProfile)
         } catch(error: any) {
           console.error(error.message)
@@ -67,8 +63,8 @@ export default function UserAvatar() {
 
   const notLoggedInHtml = (
     <Link href="/login">
-      <Avatar className="w-14 h-14 cursor-pointer bg-primary">
-        <AvatarFallback>?</AvatarFallback>
+      <Avatar className="w-14 h-14 cursor-pointer hover:shadow hover:scale-105 active:scale-100 active:shadow-inner">
+        <AvatarFallback> <GiAxeInStump className=' w-full h-full'/> </AvatarFallback>
       </Avatar>
     </Link>
   )
@@ -84,7 +80,7 @@ export default function UserAvatar() {
           className="w-full h-full object-cover object-center"
           src={profile.avatar_url}
         ></AvatarImage>
-        <AvatarFallback>{avatarFallback}</AvatarFallback>
+        <AvatarFallback><GiSkeletonInside /></AvatarFallback>
       </Avatar>
       
       </DropdownMenuTrigger>

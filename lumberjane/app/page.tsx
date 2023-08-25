@@ -15,7 +15,7 @@ export default function Home() {
           <h2>Don&rsquo;t expose your API keys in your gamejam or small project, Lumberjane offers a simple solution for storing, managing, accessing, and logging your API keys to make sure they aren&rsquo;t abused.</h2>
           <br />
           <Link href="/login">
-            <Button>Get Started</Button>
+            <Button className="hover:scale-125 hover:shadow active:shadow-inner active:scale-100 text-lg" size='lg'>Get Started</Button>
           </Link>
         </CardContent>
       </Card>

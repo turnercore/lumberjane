@@ -97,6 +97,8 @@ body {
 
 .vibrating-element:hover {
   animation: vibrate 0.1s linear infinite;
+  transform: scale(1.25);
+
 }
 
 .ripple-button {
