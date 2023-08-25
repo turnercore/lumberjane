@@ -34,7 +34,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <div className="flex flex-col min-h-screen">
               <Toast />
-              <Header isDark={isDark}/>
+              <Header />
               <div className="flex-1 mt-3 mb-3">{children}</div>
               <div className="background"></div>
               <Footer />
