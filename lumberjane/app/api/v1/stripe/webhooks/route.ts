@@ -20,8 +20,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Webhook Error: ${err?.message}` }, { status: 400 })
   }
 
-  const eventData = event.data.object as Stripe.PaymentIntent
-  const userId = eventData.customer as string
+  const eventData = event.data as Stripe.Event.Data
+  console.log(eventData)
+
+  return NextResponse.json({ received: true })
+  
   const productId = eventData.product as string // You'll need to extract this based on your Stripe setup
 
   // Update transactions table
