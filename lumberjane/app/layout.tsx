@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider"
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs' // 'nodejs' (default) | 'edge'
 
-const url = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const url = process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'
 
 export const metadata: Metadata = {
   title: 'Lumberjane',
