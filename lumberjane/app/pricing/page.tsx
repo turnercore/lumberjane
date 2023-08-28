@@ -29,9 +29,9 @@ const PricingPage = () => {
             'Unlimited active tokens',
             '1000 ai response validations monthly'
           ]}
-          tier="supporter"
+          tier="lumberjane_supporter"
         >
-          Subscribe
+          <p>Subscribe</p>
         </PricingCard>
 
         <PricingCard
@@ -43,9 +43,9 @@ const PricingPage = () => {
             'Unlimited active tokens',
             'Unlimited ai response validation'
           ]}
-          tier="pillar"
+          tier="lumberjane_pillar"
         >
-          <p> Coming soon! </p>
+          <p>Coming soon!</p>
           </PricingCard>
 
       </div>

@@ -17,8 +17,6 @@ export default function LoginForm() {
         //This isn't really an error, maybe remove error and just make it empty array.
         if(!providersENV) throw new Error('No providers found in env');
         const providersArray = providersENV.split(',');
-        console.log(providersENV)
-        console.log(providersArray);
         providersArray.forEach(provider => {
             providers.push(provider as Provider);
         });
