@@ -1,20 +1,69 @@
+import Stripe from 'stripe'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+export const dynamic = 'force-dynamic'
 
 type ExpectedSearchParams = {
-  success? : boolean,
-  canceled? : boolean,
-  session_id? : string
+  session_id : string
 }
 
-export default function SubscribedPage({searchParams} : {searchParams: ExpectedSearchParams}) {
-  if (searchParams.success) {
+const stripeSecretKey = process.env.NEXT_PUBLIC_ || ''
+
+export default async function SubscribedPage({ searchParams } : {searchParams: ExpectedSearchParams}) {
+  const supabase = createServerComponentClient({ cookies })
+  const stripe = new Stripe(stripeSecretKey, {
+    apiVersion: '2023-08-16',
+  })
+  const session = await stripe.checkout.sessions.retrieve(searchParams.session_id)
+
+  if (session.customer) {
+    const stripeCustomerId = session.customer as string
+    //Get user ID from session
+    const { data: sessionData , error: sessionError } = await supabase.auth.getSession()
+    if (sessionError) {
+      console.error(sessionError)
+      return (
+        <div>
+          <h1>Something went wrong. User session not found.</h1>
+        </div>
+      )
+    }
+
+    const userId = sessionData.session?.user?.id
+    if (!userId) {
+      return (
+        <div>
+          <h1>Something went wrong. User not found.</h1>
+        </div>
+      )
+    }
+
+    const { error: updateError } = 
+      await supabase
+      .from('profiles')
+      .update({ 'stripe_customer_id': stripeCustomerId })
+      .match({ id: userId })
+      .single()
+
+    if (updateError) {
+      console.error(updateError)
+      return (
+        <div>
+          <h1>Something went wrong. User not updated.</h1>
+        </div>
+      )
+    }
+
     return (
-    <div>Subscription successful! Session ID: {searchParams.session_id || 'session_id not found'}</div>
+      <div>
+        <h1>Thank you for supporting!</h1>
+      </div>
     )
   }
 
-  if (searchParams.canceled) {
-    return <div>Subscription was canceled.</div>
-  }
-
-  return <div>Something went wrong.</div>
+  return (
+    <div>
+      <h1>No Customer Session ID</h1>
+    </div>
+  )
 }

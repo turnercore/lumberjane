@@ -1,7 +1,5 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,7 +11,6 @@ const stripe = new Stripe(stripeSecretKey, {
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies })
     const requestBody = JSON.parse(await req.text())
     if (!requestBody) {
       return NextResponse.json({ error: 'No request body provided' }, { status: 400 })
@@ -38,8 +35,8 @@ export async function POST(req: NextRequest) {
         }
       ],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscribed/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscribed/?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscribed/?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/`,
       automatic_tax: { enabled: true }
     })
 
