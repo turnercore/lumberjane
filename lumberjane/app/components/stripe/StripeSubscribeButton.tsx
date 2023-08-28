@@ -2,11 +2,12 @@ import { Button } from '@/components/ui'
 import type { ReactElement } from 'react'
 
 type SubscribeButtonProps = {
-  subscriptionType: string,
-  children: React.ReactNode
+  tier: string,
+  children: React.ReactNode,
+  disabledButton?: boolean
 }
 
-export default function StripeSubscribeButton({ subscriptionType, children }: SubscribeButtonProps): ReactElement {  
+export default function StripeSubscribeButton({ tier, children, disabledButton }: SubscribeButtonProps): ReactElement {  
   const handleSubscribe = async () => {
     try {
       const response = await fetch('/api/v1/stripe/create-checkout-session', {
@@ -14,7 +15,7 @@ export default function StripeSubscribeButton({ subscriptionType, children }: Su
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ lookup_key: subscriptionType })
+        body: JSON.stringify({ lookup_key: tier })
       })
 
       const data = await response.json()
@@ -28,7 +29,7 @@ export default function StripeSubscribeButton({ subscriptionType, children }: Su
   }
 
   return (
-    <Button onClick={handleSubscribe}>
+    <Button onClick={handleSubscribe} disabled={disabledButton ? true : false}>
       {children}
     </Button>
   )
