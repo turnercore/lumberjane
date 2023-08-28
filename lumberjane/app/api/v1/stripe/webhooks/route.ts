@@ -24,57 +24,57 @@ export async function POST(req: NextRequest) {
   console.log(eventData)
 
   return NextResponse.json({ received: true })
-  
-  const productId = eventData.product as string // You'll need to extract this based on your Stripe setup
 
-  // Update transactions table
-  await supabase.from('transactions').insert([
-    {
-      transaction_id: eventData.id,
-      user_id: userId,
-      data: JSON.stringify(eventData)
-    }
-  ])
+  // const productId = eventData.product as string // You'll need to extract this based on your Stripe setup
 
-  // Handle subscriptions
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      // Check if a subscription already exists
-      const { data: existingSubscriptions } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
+  // // Update transactions table
+  // await supabase.from('transactions').insert([
+  //   {
+  //     transaction_id: eventData.id,
+  //     user_id: userId,
+  //     data: JSON.stringify(eventData)
+  //   }
+  // ])
 
-      const currentDate = new Date()
-      const endDate = new Date()
-      endDate.setFullYear(currentDate.getFullYear() + 1)
-      endDate.setDate(currentDate.getDate() + 3)
+  // // Handle subscriptions
+  // switch (event.type) {
+  //   case 'payment_intent.succeeded':
+  //     // Check if a subscription already exists
+  //     const { data: existingSubscriptions } = await supabase
+  //       .from('subscriptions')
+  //       .select('*')
+  //       .eq('user_id', userId)
 
-      if (existingSubscriptions && existingSubscriptions.length > 0) {
-        // Renew subscription
-        await supabase.from('subscriptions').upsert([
-          {
-            user_id: userId,
-            start_date: currentDate,
-            end_date: endDate,
-            product_id: productId,
-          }
-        ])
-      } else {
-        // Create new subscription
-        await supabase.from('subscriptions').insert([
-          {
-            user_id: userId,
-            start_date: currentDate,
-            end_date: endDate,
-            product_id: productId,
-          }
-        ])
-      }
-      break
-    default:
-      console.log(`Unhandled event type ${event.type}`)
-  }
+  //     const currentDate = new Date()
+  //     const endDate = new Date()
+  //     endDate.setFullYear(currentDate.getFullYear() + 1)
+  //     endDate.setDate(currentDate.getDate() + 3)
 
-  return NextResponse.json({ received: true })
+  //     if (existingSubscriptions && existingSubscriptions.length > 0) {
+  //       // Renew subscription
+  //       await supabase.from('subscriptions').upsert([
+  //         {
+  //           user_id: userId,
+  //           start_date: currentDate,
+  //           end_date: endDate,
+  //           product_id: productId,
+  //         }
+  //       ])
+  //     } else {
+  //       // Create new subscription
+  //       await supabase.from('subscriptions').insert([
+  //         {
+  //           user_id: userId,
+  //           start_date: currentDate,
+  //           end_date: endDate,
+  //           product_id: productId,
+  //         }
+  //       ])
+  //     }
+  //     break
+  //   default:
+  //     console.log(`Unhandled event type ${event.type}`)
+  // }
+
+  // return NextResponse.json({ received: true })
 }
