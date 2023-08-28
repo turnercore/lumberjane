@@ -1,8 +1,9 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'; // Import components from the UI library
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+
   return (
     <div className="container mx-auto px-4">
       {/* Hero Section */}
@@ -12,7 +13,9 @@ export default function Home() {
           <CardDescription> Lumberjane is a tool for securely storing and accessing your API keys.</CardDescription>
         </CardHeader>
         <CardContent>
-          <h2>Don&rsquo;t expose your API keys in your gamejam or small project, Lumberjane offers a simple solution for storing, managing, accessing, and logging your API keys to make sure they aren&rsquo;t abused.</h2>
+          <h2>
+            Don&rsquo;t expose your API keys in your gamejam or small project, Lumberjane offers a simple solution for storing, managing, accessing, and logging your API keys to make sure they aren&rsquo;t abused.
+          </h2>
           <br />
           <Link href="/login">
             <Button className="hover:scale-125 hover:shadow active:shadow-inner active:scale-100 text-lg" size='lg'>Get Started</Button>
