@@ -1,10 +1,14 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 // define routes that require authentication
-const protectedClientRoutes = ['/dashboard', '/account', '/keys', '/tokens'];
-const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles', '/api/v1/tokens'];
+const protectedClientRoutes = ['/dashboard', '/account', '/keys', '/tokens', '/subscribed']
+const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles', '/api/v1/tokens']
+
+//This turns off these routes for self-hosting
+const commercialRoutes = ['/pricing', '/subscribed', '/api/v1/stripe']
+const isCommercialDisabled = process.env.COMMERCIAL_DISABLED === 'true'
 
 // !!!!!!MAKE SURE TO UPDATE THE MATCHER AS WELL IF YOU CHANGE/ADD ROUTES!!!!!!!!
 export const config = {
@@ -16,47 +20,68 @@ export const config = {
         '/api/v1/auth/:path*',
         '/api/v1/keys/:path*',
         '/api/v1/profiles/:path*',
-        '/api/v1/tokens/:path*'
+        '/api/v1/tokens/:path*',
+        '/pricing/:path*',
+        '/subscribed/:path*',
+        '/api/v1/stripe/:path*',
     ],
-};
+}
 
 
 function isProtectedClientRoute(pathname: string): boolean {
-    return protectedClientRoutes.includes(pathname);
+    return protectedClientRoutes.includes(pathname)
 }
 
 function isProtectedApiRoute(pathname: string): boolean {
-    return protectedApiRoutes.some(route => pathname.startsWith(route));
+    return protectedApiRoutes.some(route => pathname.startsWith(route))
+}
+
+function isCommercialRoute(pathname: string): boolean {
+    return commercialRoutes.includes(pathname)
 }
 
 function handleUnauthenticatedClient(): NextResponse {
-    return NextResponse.redirect('/login');
+    return NextResponse.redirect('/login')
 }
 
 function handleUnauthenticatedApi(): NextResponse {
     return new NextResponse(
         JSON.stringify({ success: false, message: 'authentication failed' }),
         { status: 401, headers: { 'content-type': 'application/json' } }
-        );
+        )
     }
     
     export async function middleware(req: NextRequest) {
         //setup middleware
-        const res = NextResponse.next();
-        const supabase = createMiddlewareClient({ req, res });
-        const session = await supabase.auth.getSession();
-        const { pathname } = req.nextUrl;
+        const res = NextResponse.next()
+        const supabase = createMiddlewareClient({ req, res })
+        const session = await supabase.auth.getSession()
+        const { pathname } = req.nextUrl
         
         if (!session) {
             if (isProtectedClientRoute(pathname)) {
-                return handleUnauthenticatedClient();
+                return handleUnauthenticatedClient()
             }
             
             if (isProtectedApiRoute(pathname)) {
-                return handleUnauthenticatedApi();
+                return handleUnauthenticatedApi()
+            }
+        }
+
+        if (isCommercialRoute(pathname) && isCommercialDisabled) {
+
+            //if it's in the /api/ path return 401
+            if (pathname.startsWith('/api/')) {
+                return new NextResponse(
+                    JSON.stringify({ success: false, message: 'commercial features are disabled' }),
+                    { status: 401, headers: { 'content-type': 'application/json' } }
+                )
+            } else {
+                //if it's not in the /api path redirect to home '/'
+                return NextResponse.redirect('/')
             }
         }
         
-        return res;
+        return res
     }
     

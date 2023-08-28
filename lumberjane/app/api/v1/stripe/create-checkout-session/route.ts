@@ -38,8 +38,9 @@ export async function POST(req: NextRequest) {
         }
       ],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}?canceled=true`
+      success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscribed/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscribed/?canceled=true`,
+      automatic_tax: { enabled: true }
     })
 
     return NextResponse.json({ success: true, url: session.url })
