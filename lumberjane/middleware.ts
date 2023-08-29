@@ -8,7 +8,7 @@ const protectedApiRoutes = ['/api/v1/auth',  '/api/v1/keys', '/api/v1/profiles',
 
 //This turns off these routes for self-hosting
 const commercialRoutes = ['/pricing', '/subscribed', '/api/v1/stripe']
-const isCommercialDisabled = process.env.COMMERCIAL_DISABLED === 'true'
+const isCommercial = process.env.NEXT_PUBLIC_ENABLE_COMMERCIAL === 'true'
 
 // !!!!!!MAKE SURE TO UPDATE THE MATCHER AS WELL IF YOU CHANGE/ADD ROUTES!!!!!!!!
 export const config = {
@@ -26,7 +26,6 @@ export const config = {
         '/api/v1/stripe/:path*',
     ],
 }
-
 
 function isProtectedClientRoute(pathname: string): boolean {
     return protectedClientRoutes.includes(pathname)
@@ -68,7 +67,7 @@ function handleUnauthenticatedApi(): NextResponse {
             }
         }
 
-        if (isCommercialRoute(pathname) && isCommercialDisabled) {
+        if (isCommercialRoute(pathname) && !isCommercial) {
 
             //if it's in the /api/ path return 401
             if (pathname.startsWith('/api/')) {

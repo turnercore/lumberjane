@@ -55,7 +55,7 @@ export default async function NavBar() {
         </NavigationMenuItem>
         )}
 
-        {process.env.NEXT_PUBLIC_DISABLE_COMMERCIAL !== "true" && (
+        {process.env.NEXT_PUBLIC_ENABLE_COMMERCIAL === "true" && (
           <NavigationMenuItem>
             <Link href="/pricing" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle}>
