@@ -1,5 +1,6 @@
-import { StandardResponse } from "@/types";
-import { Configuration, OpenAIApi } from "openai";
+import { StandardResponse } from "@/types"
+import OpenAI from "openai"
+import { ChatCompletion } from "openai/resources/chat/index.mjs"
 
 export default async function openAiAssist(apiKey: string, request: string, expectedResponse: string): Promise<StandardResponse> {
   const content = `
@@ -8,14 +9,13 @@ export default async function openAiAssist(apiKey: string, request: string, expe
   
   Expected Response Schema:
   ${expectedResponse}
-  `;
+  `
 
-  const configuration = new Configuration({
+  const openai = new OpenAI({
     apiKey
-  });
-  const openai = new OpenAIApi(configuration);
-  
-  const response = await openai.createChatCompletion({
+  })
+
+  const response:ChatCompletion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
       {
@@ -32,25 +32,25 @@ export default async function openAiAssist(apiKey: string, request: string, expe
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
-  });
+  })
 
   // Get JSON from AI response
-  const aiResponse = response.data.choices[0]?.message?.content; // Fixed index to 0
+  const aiResponse = response.choices[0]?.message?.content // get the content of the message from the first choice
   if (!aiResponse) {
-    return { error: { message: 'No response from AI.', status: 500 } };
+    return { error: { message: 'No response from AI.', status: 500 } }
   }
   // Delete everything before the first { and after the last }
-  const json = aiResponse.substring(aiResponse.indexOf("{"), aiResponse.lastIndexOf("}") + 1);
+  const json = aiResponse.substring(aiResponse.indexOf("{"), aiResponse.lastIndexOf("}") + 1)
 
   // Parse the JSON to check for errors
   try {
-    const parsedResponse = JSON.parse(json);
+    const parsedResponse = JSON.parse(json)
     if (parsedResponse.error) {
-      return { error: { message: 'Error: ' + parsedResponse.error, status: 500 } };
+      return { error: { message: 'Error: ' + parsedResponse.error, status: 500 } }
     }
     
-    return { data: parsedResponse };
+    return { data: parsedResponse }
   } catch (e) {
-    return { error: { message: 'Invalid JSON returned.', status: 400 } };
+    return { error: { message: 'Invalid JSON returned.', status: 400 } }
   }
 }

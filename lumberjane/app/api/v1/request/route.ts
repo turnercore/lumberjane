@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { makeApiRequest, prepareRequest, validateToken, processResponse, logRequest } from './utils';
-
 export const dynamic = 'force-dynamic'
 
 
@@ -16,10 +15,6 @@ export async function POST(req: NextRequest) {
     }
     const isLocalRequest = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:' || ip === '0:0:0:0:0:0:0:1' || ip === '::ffff:127.0.0.1';
     const isTest = req.headers.get('X-Lumberjane-Test') === 'true' && isLocalRequest;
-
-    console.log('Recived request from IP:', ip);
-    console.log('islocal request:', isLocalRequest);
-    console.log('isTest:', isTest);
 
     // Validate the token
     const { data: decodedToken, error: validateError } = await validateToken(token, isTest);
@@ -60,7 +55,8 @@ export async function POST(req: NextRequest) {
       console.log('success, returning formatted response');
       console.log(formattedResponse);
       return NextResponse.json(formattedResponse, { status: 200 });
-    } else {     // If there is no expected response, just return the response as is
+    // If there is no expected response, just return the response as is
+    } else {     
       console.log('success, returning response');
       console.log(responseData);
       return NextResponse.json(responseData, { status: 200 });

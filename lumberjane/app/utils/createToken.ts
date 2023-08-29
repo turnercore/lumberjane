@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken'
-import { Token, TokenFormFields } from '@/types'
-import type { UUID } from 'crypto'
 import { User } from '@supabase/auth-helpers-nextjs'
 import { v4 as uuidv4 } from 'uuid'
+import type { Token, TokenFormFields, UUID } from '@/types'
 
 const tokenSecret = process.env.LUMBERJANE_MASTER_KEY || 'super-secret-jwt-key-seriously-you-should-change-this'
 

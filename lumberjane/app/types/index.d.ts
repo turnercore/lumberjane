@@ -1,7 +1,8 @@
-// User from supabase: Email	Phone	Provider	Created	Last Sign In	User UID	
-import type { UUID } from 'crypto';
+// UUID type imported from 'crypto' library
+import type { UUID as CryptoUUID } from 'crypto';
 
-export type UUID = UUID;
+// Re-exporting the UUID type for use in this file
+export type UUID = CryptoUUID;
 
 export type User = {
     id: UUID;
@@ -14,19 +15,6 @@ export type User = {
 
 type authType = 'none' | 'bearer'
 
-// create table
-//   public.tokens (
-//     id uuid not null default gen_random_uuid (),
-//     created_at timestamp with time zone not null default timezone ('utc'::text, now()),
-//     name text null,
-//     description text null,
-//     expiration timestamp with time zone null,
-//     user_id uuid not null,
-//     token text not null,
-//     status text null default 'active'::text,
-//     constraint jwt_tokens_pkey primary key (id),
-//     constraint tokens_user_id_fkey foreign key (user_id) references auth.users (id) on delete cascade
-//   ) tablespace pg_default;
 export type TokenData = {
   id: UUID;
   name: string;
@@ -76,6 +64,7 @@ export type UserProfile = {
     full_name?: string;
     avatar_url?: string;
     website?: string;
+    stripe_customer_id?: string;
 };
 
 export type KeyId = UUID
