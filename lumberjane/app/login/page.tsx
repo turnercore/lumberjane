@@ -1,7 +1,6 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import SignOutButton from '@/components/client/SignOutButton'
 import LoginForm from '@/components/client/LoginForm'
-
 import { cookies } from 'next/headers'
 export const dynamic = 'force-dynamic'
 

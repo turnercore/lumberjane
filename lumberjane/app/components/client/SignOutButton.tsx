@@ -1,20 +1,20 @@
 "use client"
 import { Button } from '@/components/ui'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function SignOutButton() {
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient()
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/login';
+    await supabase.auth.signOut()
+    window.location.href = '/login'
   }
 
   const handleSignOut = () => {
     try {
-      signOut();
+      signOut()
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
   }
 

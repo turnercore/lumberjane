@@ -1,10 +1,9 @@
 'use client'
+'use client'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
-  Card,
-  CardHeader,
   DialogContent,
   DialogTrigger,
   Select,

@@ -1,4 +1,4 @@
-import { TokenFormFields } from "@/types";
+import type { TokenFormFields } from "@/types";
 
 const defaultFormData: TokenFormFields = {
   key: undefined,

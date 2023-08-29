@@ -18,14 +18,13 @@ import {
   FormControl,
   FormMessage,
   Input,
-  Label,
   FormLabel,
 } from '@/components/ui'
-import { Key } from '@/types'
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { FieldValues, useForm } from "react-hook-form"
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
+import type { Key } from '@/types'
 
 type KeyAddDialogProps = {
   onAddKey?: (key: Key) => void

@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import {
   Avatar,
   AvatarImage,
@@ -12,8 +12,8 @@ import { User, createClientComponentClient } from "@supabase/auth-helpers-nextjs
 import Link from "next/link"
 import SignOutButton from "./SignOutButton"
 import { useEffect, useState } from "react"
-import { Profile } from "@/types"
 import { GiAxeInStump, GiSkeletonInside } from "react-icons/gi"
+import type { Profile } from "@/types"
 
 export default function UserAvatar() {
   const [user, setUser] = useState< User | null>(null)

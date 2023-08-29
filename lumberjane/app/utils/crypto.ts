@@ -21,7 +21,6 @@ export async function encrypt(text: string, passphrase: string = ''): Promise<{ 
   }
 }
 
-
 export async function decrypt(encryptedText: string, passphrase: string = ''): Promise<{ decrypted?: string, error?: Error }> {
   try {
     // Extract the IV from the beginning of the encrypted data

@@ -1,5 +1,5 @@
-import type { NextPage } from "next"
 import TokenForm from "./components/TokenForm"
+import type { NextPage } from "next"
 
 const Dashboard: NextPage = () => {
   return (

@@ -1,11 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/image"
+import Link from "next/link"
 
 const Footer = () => {
-  const emojis = ['❤️', '🐶', '☕️', '❤️‍🩹', '🪵'];
-  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-  const currentYear = new Date().getFullYear();
-  const copywrite = `© ${currentYear} Turner Monroe`;
+  const emojis = ['❤️', '🐶', '☕️', '❤️‍🩹', '🪵']
+  const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)]
+  const currentYear = new Date().getFullYear()
+  const copywrite = `© ${currentYear} Turner Monroe`
 
   return (
       <footer className="bg-gray-800 py-4 bottom-0 w-full">
@@ -27,7 +27,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

@@ -1,32 +1,32 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import type { Key } from '@/types';
-import { DialogClose, DialogContent, DialogTrigger, Label, Button, Tooltip, TooltipProvider, TooltipContent, TooltipTrigger, Dialog, DialogHeader } from '@/components/ui';
-import KeyAddDialog from '@/components/client/KeyAddDialog';
+'use client'
+import React, { useRef, useState } from 'react'
+import { DialogClose, DialogContent, DialogTrigger, Button, Dialog, DialogHeader } from '@/components/ui'
+import KeyAddDialog from '@/components/client/KeyAddDialog'
+import type { Key } from '@/types'
 
 
 const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
-  const [keys, setKeys] = useState<Key[]>(initialKeys);
-  const prevKeysLength = useRef(keys.length);
+  const [keys, setKeys] = useState<Key[]>(initialKeys)
+  const prevKeysLength = useRef(keys.length)
   // State to keep track of the visibility of each key
-  const [keyVisibility, setKeyVisibility] = useState<Record<string, boolean>>({});
+  const [keyVisibility, setKeyVisibility] = useState<Record<string, boolean>>({})
 
   // Function to toggle the visibility of a key
   const toggleKeyVisibility = (keyId: string) => {
     setKeyVisibility((prevVisibility) => ({
       ...prevVisibility,
       [keyId]: !prevVisibility[keyId],
-    }));
-  };
+    }))
+  }
 
   const addKey = (key: Key) => {
     // Update the key list so the key is visible immediately
-    setKeys((prevKeys) => [...prevKeys, key]);
-  };
+    setKeys((prevKeys) => [...prevKeys, key])
+  }
 
   const handleDeleteKey = (keyToDelete: Key) => {
     //Get Key ID
-    const keyId: Key['id'] = keyToDelete.id;
+    const keyId: Key['id'] = keyToDelete.id
 
     fetch('/api/v1/keys/delete', {
       method: 'DELETE',
@@ -38,18 +38,18 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId));
+          setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId))
         } else {
-          console.log('Error deleting key!');
+          console.log('Error deleting key!')
         }
       })
       .catch((error: any) => {
-        console.log('Error deleting key!');
-      });
+        console.log('Error deleting key!')
+      })
 
       // Delete key from state
-      setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId));
-  };
+      setKeys((prevKeys) => prevKeys.filter((key) => key?.id !== keyId))
+  }
 
   return (
       <div className="divide-y divide-gray-200 m-3 p-2">
@@ -76,7 +76,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
               </DialogTrigger>
               <DialogContent className='text-center'>
                 <DialogHeader className='text-center'>
-                  <h1 className="text-lg font-bold text-center">Delete Key &ldquo;{key?.name?.toUpperCase()}&rdquo;</h1>
+                  <h1 className="text-lg font-bold text-center">Delete Key &ldquo{key?.name?.toUpperCase()}&rdquo</h1>
                 </DialogHeader>
                 <h2>Are you sure you want to delete this key?</h2>
                 <div className='flex justify-center space-x-2'>
@@ -94,7 +94,7 @@ const KeyList = ({ keys: initialKeys }: { keys: Key[] }) => {
           <Button variant="default">Add Key</Button>
         </KeyAddDialog>
       </div>
-  );
-};
+  )
+}
 
-export default KeyList;
+export default KeyList

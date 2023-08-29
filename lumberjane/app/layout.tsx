@@ -1,10 +1,11 @@
 import '@/globals.css'
 import 'react-toastify/dist/ReactToastify.css'
-import type { Metadata } from 'next'
 import Header from './components/server/Header'
 import Toast from '@/components/client/Toast'
 import Footer from './components/server/Footer'
 import { ThemeProvider } from "@/components/ui/theme-provider"
+
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs' // 'nodejs' (default) | 'edge'

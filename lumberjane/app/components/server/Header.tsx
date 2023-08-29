@@ -1,4 +1,3 @@
-import Logo from "./Logo"
 import UserAvatar from "../client/UserAvatar"
 import NavBar from "./NavBar"
 import { ModeToggle } from "../ui"

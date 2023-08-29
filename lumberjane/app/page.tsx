@@ -1,6 +1,5 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
-import Image from "next/image";
-import Link from "next/link";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
+import Link from "next/link"
 
 export default function Home() {
 
@@ -14,7 +13,7 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <h2>
-            Don&rsquo;t expose your API keys in your gamejam or small project, Lumberjane offers a simple solution for storing, managing, accessing, and logging your API keys to make sure they aren&rsquo;t abused.
+            Don&rsquot expose your API keys in your gamejam or small project, Lumberjane offers a simple solution for storing, managing, accessing, and logging your API keys to make sure they aren&rsquot abused.
           </h2>
           <br />
           <Link href="/login">
@@ -33,7 +32,7 @@ export default function Home() {
               <CardDescription>Perfect for small projects and gamejam games!</CardDescription>
             </CardHeader>
             <CardContent>
-              <p> Does your small project or game use third party API keys? Don&rsquo;t ship your keys with your app! </p>
+              <p> Does your small project or game use third party API keys? Don&rsquot ship your keys with your app! </p>
             </CardContent>
           </Card>
           <Card className="">
@@ -51,7 +50,7 @@ export default function Home() {
               <CardDescription>Setting an optional return schema with your token allows you to only get the data back that you want.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p> Use AI to validate reponses to make sure you&rsquo;re getting the data you expect.</p>
+              <p> Use AI to validate reponses to make sure you&rsquore getting the data you expect.</p>
             </CardContent>
           </Card>
           <Card className="">
@@ -89,11 +88,11 @@ export default function Home() {
         <h2 className="text-2xl font-bold mb-4">What our users say</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="">
-            <p className="text-lg mt-2">&ldquo;This app is amazing!&rdquo;</p>
+            <p className="text-lg mt-2">&ldquoThis app is amazing!&rdquo</p>
             <p className="text-sm text-gray-500">- John Doe</p>
           </div>
         </div>
       </section> */}
     </div>
-  );
+  )
 }

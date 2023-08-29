@@ -1,27 +1,27 @@
-'use client';
-import { Auth } from '@supabase/auth-ui-react'; 
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../ui';
-import { Provider } from '@supabase/supabase-js';
+'use client'
+import { Auth } from '@supabase/auth-ui-react' 
+import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../ui'
+import { Provider } from '@supabase/supabase-js'
 
-const providersENV = process.env.NEXT_PUBLIC_PROVIDERS || '';
-const domain = process.env.NEXT_PUBLIC_DOMAIN || '';
+const providersENV = process.env.NEXT_PUBLIC_PROVIDERS || ''
+const domain = process.env.NEXT_PUBLIC_DOMAIN || ''
 
 export default function LoginForm() {
-    const supabase = createClientComponentClient();
+    const supabase = createClientComponentClient()
 
     //Split providers by , and add each to the providers list
-    const providers = [] as Provider[];
+    const providers = [] as Provider[]
     try {
         //This isn't really an error, maybe remove error and just make it empty array.
-        if(!providersENV) throw new Error('No providers found in env');
-        const providersArray = providersENV.split(',');
+        if(!providersENV) throw new Error('No providers found in env')
+        const providersArray = providersENV.split(',')
         providersArray.forEach(provider => {
-            providers.push(provider as Provider);
-        });
+            providers.push(provider as Provider)
+        })
     } catch (error: any) {
-        console.error(error.message);
+        console.error(error.message)
     }
 
     return (

@@ -1,5 +1,4 @@
 'use client'
-import { Key, KeyId } from "@/types"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {   
   Popover,
@@ -14,7 +13,8 @@ import {
 import { useEffect, useState } from "react"
 import { ChevronsUpDown } from "lucide-react"
 import KeyAddDialog from "@/components/client/KeyAddDialog"
-
+import type { Key, KeyId } from "@/types"
+  
 //This component is a shadcn dropdown menu that displays the user's keys. Each key will be displayed by it's name
 //and when hovered will display the description as a tooltip. When clicked the 'selectKey' callback will be execute
 //at the end the dropdown will have a 'create new key' button that will execute the 'createKey' callback  

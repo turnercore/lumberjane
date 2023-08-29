@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui"
 import { exampleTokens } from "./examples/exampleTokens"
-import { TokenFormFields } from "@/types"
+import type { TokenFormFields } from "@/types"
 
 type TestCase = Partial<TokenFormFields>
 

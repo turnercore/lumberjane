@@ -3,9 +3,9 @@ import {
   CardHeader,
   CardContent,
 } from "@/components/ui"
-import type { TokenData } from '@/types'
 import TokenTable from './components/TokenTable'
 import { fetchTokens } from './utils/utils'
+import type { TokenData } from '@/types'
 
 const TokensDashboard = async () => {
   const tokenData = await fetchTokens()
