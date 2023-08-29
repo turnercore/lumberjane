@@ -5,6 +5,8 @@ import fetchAndDecryptKey from './fetchAndDecryptKey'
 import makeApiRequest from './makeApiRequest'
 import processResponse from './processResponse'
 import logRequest from './logRequest'
+import recordTokenUse from './recordTokenUse'
+import moderateInputWithOpenAI from './moderateInputWithOpenAI'
 
 
 export {
@@ -15,4 +17,6 @@ export {
     openAiAssist,
     fetchAndDecryptKey,
     logRequest,
+    recordTokenUse,
+    moderateInputWithOpenAI,
 }

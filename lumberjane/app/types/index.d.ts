@@ -65,6 +65,7 @@ export type UserProfile = {
     avatar_url?: string;
     website?: string;
     stripe_customer_id?: string;
+    openai_tokens_used?: number;
 };
 
 export type KeyId = UUID

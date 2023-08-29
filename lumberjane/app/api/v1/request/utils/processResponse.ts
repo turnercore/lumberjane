@@ -1,9 +1,7 @@
 import type { StandardResponse, UUID } from "@/types"
-import { fetchAndDecryptKey, openAiAssist } from "./"
+import { fetchAndDecryptKey, openAiAssist, moderateInputWithOpenAI } from "./"
 import { matchJSONtoSchema } from "@/utils/utils"
 import { SupabaseClient, createClient } from '@supabase/supabase-js'
-import OpenAI from 'openai'
-import { Moderation } from "openai/resources/moderations.mjs"
 
 const isCommercial = process.env.NEXT_PUBLIC_ENABLE_COMMERCIAL === 'true' || false
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -14,40 +12,6 @@ type AiAssistOptions = {
   openAiKeyId?: UUID,
   userId?: UUID,
   passphrase?: string // Used for double encryption
-}
-
-// Moderates input with OpenAI
-async function moderateInputWithOpenAI(key: string, input: string): Promise<Moderation | null> {
-  if (!key || !input) {
-    return null
-  }
-
-  try {
-    // Construct the OpenAI client
-    const openai = new OpenAI({
-      apiKey: key,
-      maxRetries: 1,
-      timeout: 20 * 1000,
-    })
-
-    // Perform the moderation
-    const { results } = await openai.moderations.create({ input })
-    if(!results || results.length === 0) {
-      return null
-    }
-    const moderation: Moderation = results[0]
-
-    // Assuming moderation.results contains the moderation object you're interested in
-    // Validate the result (you may need to adjust this based on the actual API response)
-    if (moderation) {
-      return moderation
-    } else {
-      return null
-    }
-  } catch (err: any) {
-    console.error('Error moderating input with OpenAI:', err)
-    return null
-  }
 }
 
 // Test a key using the moderation input
@@ -68,7 +32,7 @@ async function testKey(key: string): Promise<boolean> {
 async function isAllowedServerKey(aiAssist: AiAssistOptions, supabase: SupabaseClient): Promise<boolean> {
   try {
     // First make sure the server key exists and is valid:
-    const serverOpenAiKey = process.env.OPEN_AI_KEY || ''
+    const serverOpenAiKey = process.env.OPENAI_API_KEY || ''
     if (!serverOpenAiKey) {
       return false
     }
@@ -121,37 +85,61 @@ async function fetchValidOpenAiKey(aiAssist: AiAssistOptions): Promise<string | 
 
   if (allowedUseOfServerKey) {
     // Use the server key for the request
-    return process.env.OPEN_AI_KEY || null
+    return process.env.OPENAI_API_KEY || null
   }
   // If we're here then the user is not allowed to use the server key and does not have a valid key set
   return null
 }
 
-export default async function processResponse(response: any, expectedResponse: any = '', aiAssist: AiAssistOptions = { enabled: false }): Promise<StandardResponse> {
+/**
+ * Process a given response against an expected schema and optionally use AI assistance.
+ * @param response - The actual response data.
+ * @param expectedResponse - The expected schema of the response.
+ * @param aiAssist - Options for AI assistance.
+ * @returns - A promise that resolves to a StandardResponse object.
+ */
+export default async function processResponse(
+  response: any, 
+  expectedResponse: any = '', 
+  aiAssist: AiAssistOptions = { enabled: false }
+): Promise<StandardResponse> {
   try {
+    // Check if either the response or expectedResponse is empty
     if (Object.keys(expectedResponse).length === 0 || Object.keys(response).length === 0) {
-      console.log('Got empty response or expectedResponse')
+      console.log('Received empty response or expectedResponse')
       return { data: response }
     }
 
+    // Attempt to match the response to the expected schema
     const processedResponse = matchJSONtoSchema(response, expectedResponse)
+
+    // If no error in processedResponse, return it
     if (!(typeof processedResponse === 'string' && processedResponse.includes('Error'))) {
       return { data: processedResponse }
     }
 
+    // Fetch a valid OpenAI key if AI assistance is enabled
     const validOpenAiKey = await fetchValidOpenAiKey(aiAssist)
     if (!validOpenAiKey) {
       return { error: { message: 'No valid OpenAI key found', status: 400 } }
     }
 
-    const { data: aiAssistData, error: aiAssistError } = await openAiAssist(validOpenAiKey, response, expectedResponse)
+    // Get the user ID from aiAssist options, if available
+    const userId = aiAssist.userId || undefined
+
+    // Call the AI assistant for help
+    const { data: aiAssistData, error: aiAssistError } = await openAiAssist(response, expectedResponse, userId, validOpenAiKey)
+
+    // If there's an error in AI assistance, return it
     if (aiAssistError) {
       return { error: aiAssistError }
     }
 
+    // Return the data processed by the AI assistant
     return { data: aiAssistData }
 
   } catch (err: any) {
+    // Catch any unexpected errors and return them
     return { error: { message: err, status: 500 } }
   }
 }
