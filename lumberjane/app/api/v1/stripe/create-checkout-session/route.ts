@@ -6,12 +6,11 @@ export const dynamic = 'force-dynamic'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || ''
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-08-16'
-})
-
 export async function POST(req: NextRequest) {
   try {
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-08-16'
+    })
     const supabase = createRouteHandlerClient({ cookies })
     const { data: supabaseSessionData, error: supabaseSessionError } = await supabase.auth.getSession()
     if (supabaseSessionError) {
