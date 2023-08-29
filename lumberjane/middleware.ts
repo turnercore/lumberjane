@@ -49,38 +49,40 @@ function handleUnauthenticatedApi(): NextResponse {
         { status: 401, headers: { 'content-type': 'application/json' } }
         )
     }
-    
-    export async function middleware(req: NextRequest) {
-        //setup middleware
-        const res = NextResponse.next()
-        const supabase = createMiddlewareClient({ req, res })
-        const session = await supabase.auth.getSession()
-        const { pathname } = req.nextUrl
-        
-        if (!session) {
-            if (isProtectedClientRoute(pathname)) {
-                return handleUnauthenticatedClient()
-            }
-            
-            if (isProtectedApiRoute(pathname)) {
-                return handleUnauthenticatedApi()
-            }
-        }
 
-        if (isCommercialRoute(pathname) && !isCommercial) {
 
-            //if it's in the /api/ path return 401
-            if (pathname.startsWith('/api/')) {
-                return new NextResponse(
-                    JSON.stringify({ success: false, message: 'commercial features are disabled' }),
-                    { status: 401, headers: { 'content-type': 'application/json' } }
-                )
-            } else {
-                //if it's not in the /api path redirect to home '/'
-                return NextResponse.redirect('/')
-            }
+
+//-------------- setup middleware ----------------- \\
+export async function middleware(req: NextRequest) {
+    const res = NextResponse.next()
+    const supabase = createMiddlewareClient({ req, res })
+    const session = await supabase.auth.getSession()
+    const { pathname } = req.nextUrl
+
+    //Disallow access to commercial routes if commercial features are disabled
+    if (isCommercialRoute(pathname) && !isCommercial) {
+        //if it's in the /api/ path return 401
+        if (pathname.startsWith('/api/')) {
+            return new NextResponse(
+                JSON.stringify({ success: false, message: 'commercial features are disabled' }),
+                { status: 401, headers: { 'content-type': 'application/json' } }
+            )
+        } else {
+            //if it's not in the /api path redirect to home '/'
+            return NextResponse.redirect('/')
         }
-        
-        return res
     }
+    
+    if (!session) {
+        if (isProtectedClientRoute(pathname)) {
+            return handleUnauthenticatedClient()
+        }
+        
+        if (isProtectedApiRoute(pathname)) {
+            return handleUnauthenticatedApi()
+        }
+    }
+    
+    return res
+}
     
