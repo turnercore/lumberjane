@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
+
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET || ''
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || ''
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || ''
+
 
 export async function POST(req: NextRequest) {
-  const supabase = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '')
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  const supabase = createClient(supabaseUrl, supabaseServiceKey)
+  const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2023-08-16'
   })
 
@@ -21,7 +26,9 @@ export async function POST(req: NextRequest) {
   }
 
   const eventData = event.data as Stripe.Event.Data
+  console.error('eventData', eventData)
   console.log(eventData)
+
 
   return NextResponse.json({ received: true })
 
