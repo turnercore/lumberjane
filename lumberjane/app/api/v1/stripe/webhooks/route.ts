@@ -24,64 +24,56 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     return NextResponse.json({ error: `Webhook Error: ${err?.message}` }, { status: 400 })
   }
-
   const eventData = event.data as Stripe.Event.Data
-  console.error('eventData', eventData)
-  console.log(eventData)
+  const paymentIntent = eventData.object as Stripe.PaymentIntent
 
+  // Step 1: Find the corresponding user in your database using the Stripe customer ID
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('stripe_customer_id', paymentIntent.customer)
+    .single()
 
+  if (profileError || !profile ) {
+    console.error('Error fetching profile:', profileError)
+    return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
+  }
+
+  const userId = profile.id
+
+  // Step 2: Create a new transaction record in the 'transactions' table
+  const { error: transactionError } = await supabase
+    .from('transactions')
+    .insert([
+      {
+        user_id: userId,
+        stripe_customer_id: paymentIntent.customer,
+        data: paymentIntent,
+      },
+    ])
+
+  if (transactionError) {
+    console.error('Error creating transaction:', transactionError)
+    return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 })
+  }
+
+  const supportLevel = paymentIntent.metadata.support_level
+
+  // Step 3: Update the 'supporters' table with the subscription details
+  const { error: supporterError } = await supabase
+    .from('supporters')
+    .upsert([
+      {
+        id: userId, // Assuming the ID in the 'supporters' table corresponds to the user ID
+        support_level: supportLevel, // Set the appropriate subscription status
+        expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000), // Set to 1 year + 7 days from now
+      },
+    ])
+
+  if (supporterError) {
+    console.error('Error updating supporter:', supporterError)
+    return NextResponse.json({ error: 'Failed to update supporter' }, { status: 500 })
+  }
+  console.log(`Successfully updated supporter ${userId} to ${supportLevel}`)
   return NextResponse.json({ received: true })
-
-  // const productId = eventData.product as string // You'll need to extract this based on your Stripe setup
-
-  // // Update transactions table
-  // await supabase.from('transactions').insert([
-  //   {
-  //     transaction_id: eventData.id,
-  //     user_id: userId,
-  //     data: JSON.stringify(eventData)
-  //   }
-  // ])
-
-  // // Handle subscriptions
-  // switch (event.type) {
-  //   case 'payment_intent.succeeded':
-  //     // Check if a subscription already exists
-  //     const { data: existingSubscriptions } = await supabase
-  //       .from('subscriptions')
-  //       .select('*')
-  //       .eq('user_id', userId)
-
-  //     const currentDate = new Date()
-  //     const endDate = new Date()
-  //     endDate.setFullYear(currentDate.getFullYear() + 1)
-  //     endDate.setDate(currentDate.getDate() + 3)
-
-  //     if (existingSubscriptions && existingSubscriptions.length > 0) {
-  //       // Renew subscription
-  //       await supabase.from('subscriptions').upsert([
-  //         {
-  //           user_id: userId,
-  //           start_date: currentDate,
-  //           end_date: endDate,
-  //           product_id: productId,
-  //         }
-  //       ])
-  //     } else {
-  //       // Create new subscription
-  //       await supabase.from('subscriptions').insert([
-  //         {
-  //           user_id: userId,
-  //           start_date: currentDate,
-  //           end_date: endDate,
-  //           product_id: productId,
-  //         }
-  //       ])
-  //     }
-  //     break
-  //   default:
-  //     console.log(`Unhandled event type ${event.type}`)
-  // }
-
-  // return NextResponse.json({ received: true })
 }
