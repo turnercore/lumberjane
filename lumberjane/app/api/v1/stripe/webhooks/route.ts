@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   if (profileError || !profile ) {
     console.error('Error fetching profile:', profileError)
-    return NextResponse.json({ error: 'Profile not found' }, { status: 500 })
+    return NextResponse.json({ error: 'Profile not found', profileError }, { status: 500 })
   }
 
   const userId = profile.id
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
   if (transactionError) {
     console.error('Error creating transaction:', transactionError)
-    return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create transaction', transactionError }, { status: 500 })
   }
 
   const supportLevel = paymentIntent.metadata.support_level
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     .from('supporters')
     .upsert([
       {
-        id: userId, // Assuming the ID in the 'supporters' table corresponds to the user ID
+        id: userId,
         support_level: supportLevel, // Set the appropriate subscription status
         expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000 + 7 * 24 * 60 * 60 * 1000), // Set to 1 year + 7 days from now
       },
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
 
   if (supporterError) {
     console.error('Error updating supporter:', supporterError)
-    return NextResponse.json({ error: 'Failed to update supporter' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update supporter', supporterError }, { status: 500 })
   }
   console.log(`Successfully updated supporter ${userId} to ${supportLevel}`)
   return NextResponse.json({ received: true })
