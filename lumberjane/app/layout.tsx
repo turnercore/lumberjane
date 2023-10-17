@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs' // 'nodejs' (default) | 'edge'
-
+ 
 const url = process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000'
 
 export const metadata: Metadata = {
